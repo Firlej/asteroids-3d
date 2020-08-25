@@ -1,0 +1,7 @@
+﻿  lodepng.cpp
+  main_file.cpp
+C:\Users\Marek\Downloads\en_szkielet_08_win\en_szkielet_08_win\main_file.cpp(208,39): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Marek\Downloads\en_szkielet_08_win\en_szkielet_08_win\main_file.cpp(209,33): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+  shaderprogram.cpp
+  Generating Code...
+  en_szkielet_08_win.vcxproj -> C:\Users\Marek\Downloads\en_szkielet_08_win\en_szkielet_08_win\Debug\en_szkielet_08_win.exe
