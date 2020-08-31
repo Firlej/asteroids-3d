@@ -1,7 +1,6 @@
-﻿  lodepng.cpp
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(459,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (en_szkielet_07_win.vcxproj).  This can lead to incorrect clean and rebuild behavior.
   main_file.cpp
-C:\Users\Marek\Downloads\en_szkielet_08_win\en_szkielet_08_win\main_file.cpp(208,39): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Marek\Downloads\en_szkielet_08_win\en_szkielet_08_win\main_file.cpp(209,33): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-  shaderprogram.cpp
-  Generating Code...
-  en_szkielet_08_win.vcxproj -> C:\Users\Marek\Downloads\en_szkielet_08_win\en_szkielet_08_win\Debug\en_szkielet_08_win.exe
+C:\Users\szulc\Documents\Code\C++\asteroids-3d\main_file.cpp(231,40): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+C:\Users\szulc\Documents\Code\C++\asteroids-3d\main_file.cpp(232,37): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+C:\Users\szulc\Documents\Code\C++\asteroids-3d\main_file.cpp(233,37): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+  en_szkielet_08_win.vcxproj -> C:\Users\szulc\Documents\Code\C++\asteroids-3d\Debug\en_szkielet_08_win.exe
