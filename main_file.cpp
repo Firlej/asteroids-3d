@@ -31,9 +31,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "modelStruct.h"
 #include "loadOBJ.hpp"
 
-float speed_x = 0; //speed in radians
-float speed_y = 0; //angular speed in radians
-float speed_z = 0; //angular speed in radians
+const float ROTATION_VELOCITY = PI;
+const float VELOCITY = 10.0f;
+
+float rot_vel_x = 0;
+float rot_vel_y = 0;
+float vel = 0; //angular speed in radians
 float aspectRatio = 1;
 ShaderProgram* sp; //Pointer to the shader program
 Model spaceCraftModel;
@@ -68,20 +71,20 @@ void error_callback(int error, const char* description) {
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	if (action == GLFW_PRESS) {
-		if (key == GLFW_KEY_LEFT) speed_x = PI;
-		if (key == GLFW_KEY_RIGHT) speed_x = -PI;
-		if (key == GLFW_KEY_UP) speed_y = -PI;
-		if (key == GLFW_KEY_DOWN) speed_y = PI;
-		if (key == GLFW_KEY_W) speed_z = 10.0f;
-		if (key == GLFW_KEY_S) speed_z = -10.0f;
+		if (key == GLFW_KEY_LEFT) rot_vel_x = ROTATION_VELOCITY;
+		if (key == GLFW_KEY_RIGHT) rot_vel_x = -ROTATION_VELOCITY;
+		if (key == GLFW_KEY_UP) rot_vel_y = -ROTATION_VELOCITY;
+		if (key == GLFW_KEY_DOWN) rot_vel_y = ROTATION_VELOCITY;
+		if (key == GLFW_KEY_W) vel = VELOCITY;
+		if (key == GLFW_KEY_S) vel = -VELOCITY;
 	}
 	if (action == GLFW_RELEASE) {
-		if (key == GLFW_KEY_LEFT) speed_x = 0;
-		if (key == GLFW_KEY_RIGHT) speed_x = 0;
-		if (key == GLFW_KEY_UP) speed_y = 0;
-		if (key == GLFW_KEY_DOWN) speed_y = 0;
-		if (key == GLFW_KEY_W) speed_z = 0;
-		if (key == GLFW_KEY_S) speed_z = 0;
+		if (key == GLFW_KEY_LEFT) rot_vel_x = 0;
+		if (key == GLFW_KEY_RIGHT) rot_vel_x = 0;
+		if (key == GLFW_KEY_UP) rot_vel_y = 0;
+		if (key == GLFW_KEY_DOWN) rot_vel_y = 0;
+		if (key == GLFW_KEY_W) vel = 0;
+		if (key == GLFW_KEY_S) vel = 0;
 	}
 }
 
@@ -164,7 +167,6 @@ void drawScene(GLFWwindow* window, float distance_z, float angle_x, float angle_
 	M = glm::rotate(M, angle_x + PI, glm::vec3(0.0f, 1.0f, 0.0f));
 	M = glm::rotate(M, angle_y - PI / 3, glm::vec3(1.0f, 0.0f, 0.0f));
 
-
 	M = glm::scale(M, glm::vec3(0.003f, 0.003f, 0.003f));
 	glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M));
 
@@ -228,9 +230,9 @@ int main(void)
 	//Main application loop
 	while (!glfwWindowShouldClose(window)) //As long as the window shouldnt be closed yet...
 	{
-		distance_z += speed_z * glfwGetTime(); //Add angle by which the object was rotated in the previous iteration
-		angle_x += speed_x * glfwGetTime(); //Add angle by which the object was rotated in the previous iteration
-		angle_y += speed_y * glfwGetTime(); //Add angle by which the object was rotated in the previous iteration
+		distance_z += vel * glfwGetTime(); //Add angle by which the object was rotated in the previous iteration
+		angle_x += rot_vel_x * glfwGetTime(); //Add angle by which the object was rotated in the previous iteration
+		angle_y += rot_vel_y * glfwGetTime(); //Add angle by which the object was rotated in the previous iteration
 		glfwSetTime(0); //Zero the timer
 		drawScene(window, distance_z, angle_x, angle_y); //Execute drawing procedure
 		glfwPollEvents(); //Process callback procedures corresponding to the events that took place up to now
