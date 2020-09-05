@@ -4,6 +4,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
+#include <math.h>
 
 GLuint readTexture(const char* filename) {
 	GLuint tex;
@@ -19,8 +21,7 @@ GLuint readTexture(const char* filename) {
 	glGenTextures(1, &tex); //Initialize one handle
 	glBindTexture(GL_TEXTURE_2D, tex); //Activate the handle
 	//Import image into graphics card's memory associated with the handle
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image.data());
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image.data());
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -37,9 +38,9 @@ public:
 	glm::vec3 vel = glm::vec3(0, 0, 0);
 	glm::vec3 acc = glm::vec3(0, 0, 0);
 
-	glm::vec2 rot = glm::vec2(0, 0);
-	glm::vec2 rot_vel = glm::vec2(0, 0);
-	glm::vec2 rot_acc = glm::vec2(0, 0);
+	glm::vec3 rot = glm::vec3(0, 0, 0);
+	glm::vec3 rot_vel = glm::vec3(0, 0, 0);
+	glm::vec3 rot_acc = glm::vec3(0, 0, 0);
 
 	void init() {
 		model = loadOBJ("models/longBlue/longBlue.obj");
@@ -49,12 +50,18 @@ public:
 	}
 
 	void update(float delta) {
-		vel += acc;
-		pos += vel * delta;
-		acc = glm::vec3(0, 0, 0);
+		// https://gamedev.stackexchange.com/a/174236
+		float friction = 0.5;
+		float frictionFactor = pow(friction, delta);
 
-		rot_vel += rot_acc;
-		rot += rot_vel * delta;
-		rot_acc = glm::vec2(0, 0);
+		vel += acc * delta;
+		pos += vel * (frictionFactor - 1) / (float) log(friction);
+		vel *= frictionFactor;
+
+		rot_vel += rot_acc * delta;
+		rot += rot_vel * (frictionFactor - 1) / (float) log(friction);
+		rot_vel *= frictionFactor;
+		std::cout << glm::to_string(rot) << std::endl;
 	}
 };
+

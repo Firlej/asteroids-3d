@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include <stdlib.h>
 #include <stdio.h>
 #include "constants.h"
@@ -34,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "spaceship.hpp"
 
 const float ROTATION_VELOCITY = PI;
-const float VELOCITY = 10.0f;
+const float ACCELERATION = 10.0f;
 
 float aspectRatio = 1;
 ShaderProgram* sp; //Pointer to the shader program
@@ -50,21 +51,21 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 	switch (action) {
 		case GLFW_PRESS: {
-			if (key == GLFW_KEY_LEFT) ss.rot_vel.x += ROTATION_VELOCITY;
-			if (key == GLFW_KEY_RIGHT) ss.rot_vel.x -= ROTATION_VELOCITY;
-			if (key == GLFW_KEY_UP) ss.rot_vel.y -= ROTATION_VELOCITY;
-			if (key == GLFW_KEY_DOWN) ss.rot_vel.y += ROTATION_VELOCITY;
-			if (key == GLFW_KEY_W) ss.vel.x += VELOCITY;
-			if (key == GLFW_KEY_S) ss.vel.x -= VELOCITY;
+			if (key == GLFW_KEY_LEFT) ss.rot_acc.x = ROTATION_VELOCITY;
+			if (key == GLFW_KEY_RIGHT) ss.rot_acc.x = -ROTATION_VELOCITY;
+			if (key == GLFW_KEY_UP) ss.rot_acc.y = -ROTATION_VELOCITY;
+			if (key == GLFW_KEY_DOWN) ss.rot_acc.y = ROTATION_VELOCITY;
+			if (key == GLFW_KEY_W) ss.acc.x = ACCELERATION;
+			if (key == GLFW_KEY_S) ss.acc.x = -ACCELERATION;
 			break;
 		}
 		case GLFW_RELEASE: {
-			if (key == GLFW_KEY_LEFT) ss.rot_vel.x -= ROTATION_VELOCITY;
-			if (key == GLFW_KEY_RIGHT) ss.rot_vel.x += ROTATION_VELOCITY;
-			if (key == GLFW_KEY_UP) ss.rot_vel.y += ROTATION_VELOCITY;
-			if (key == GLFW_KEY_DOWN) ss.rot_vel.y -= ROTATION_VELOCITY;
-			if (key == GLFW_KEY_W) ss.vel.x -= VELOCITY;
-			if (key == GLFW_KEY_S) ss.vel.x += VELOCITY;
+			if (key == GLFW_KEY_LEFT) ss.rot_acc.x = 0;
+			if (key == GLFW_KEY_RIGHT) ss.rot_acc.x = 0;
+			if (key == GLFW_KEY_UP) ss.rot_acc.y = 0;
+			if (key == GLFW_KEY_DOWN) ss.rot_acc.y = 0;
+			if (key == GLFW_KEY_W) ss.acc.x = 0;
+			if (key == GLFW_KEY_S) ss.acc.x = 0;
 			break;
 		}
 		default: {
@@ -101,9 +102,10 @@ void drawScene(GLFWwindow* window) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::mat4 V = glm::lookAt(
-		glm::vec3(0.0f, 0.0f, -20.0f), // camera located at (x, y, z)
-		glm::vec3(0.0f, 0.0f, 0.0f), // looking at (x, y, z)
-		glm::vec3(0.0f, 1.0f, 0.0f)); // up vector
+		ss.pos + glm::vec3(0.0f, 10.0f, -20.0f), // camera located at
+		ss.pos + glm::vec3(0.0f, 0.0f, 0.0f), // looking at
+		glm::vec3(0.0f, 1.0f, 0.0f) // up vector
+	); 
 	glm::mat4 P = glm::perspective(60.0f * PI / 180.0f, 1.0f, 1.0f, 100.0f); //compute projection matrix
 
 	sp->use(); //activate shading program
@@ -114,10 +116,17 @@ void drawScene(GLFWwindow* window) {
 
 	//M = glm::translate(M, glm::vec3(0.0f, -10.0f, 0.0f));
 	glm::mat4 M = glm::mat4(1.0f);
-	M = glm::translate(M, glm::vec3(0.0f, -10.0f, ss.pos.x + 20.0f));
+	//M = glm::translate(M, glm::vec3(0.0f, 0.0f, ss.pos.x));
+	M = glm::translate(M, ss.pos + glm::vec3(0.0f, -10.0f, 20.0f));
 
 	M = glm::rotate(M, ss.rot.x + PI, glm::vec3(0.0f, 1.0f, 0.0f));
 	M = glm::rotate(M, ss.rot.y - PI / 3, glm::vec3(1.0f, 0.0f, 0.0f));
+
+	// M = glm::rotate(M, ss.rot.x + PI / 3, glm::vec3(1.0f, 0.0f, 0.0f));
+	// M = glm::rotate(M, ss.rot.y + PI, glm::vec3(0.0f, 1.0f, 0.0f));
+	// M = glm::rotate(M, ss.rot.z, glm::vec3(0.0f, 0.0f, 1.0f));
+
+
 
 	M = glm::scale(M, glm::vec3(0.003f, 0.003f, 0.003f));
 	glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M));
