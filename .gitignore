@@ -32,3 +32,9 @@
 *.app
 
 *.png
+
+launch.json
+.vs
+
+Debug
+Release

@@ -31,38 +31,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "modelStruct.h"
 #include "loadOBJ.hpp"
 
+#include "spaceship.hpp"
+
 const float ROTATION_VELOCITY = PI;
 const float VELOCITY = 10.0f;
 
-float rot_vel_x = 0;
-float rot_vel_y = 0;
-float vel = 0; //angular speed in radians
 float aspectRatio = 1;
 ShaderProgram* sp; //Pointer to the shader program
-Model spaceCraftModel;
-GLuint tex0;
-GLuint tex1;
 
-//Uncomment to draw a cube
-float* vertices;
-float* texCoords;
-float* normals;
-int vertexCount;
-
-//Uncomment to draw a cube
-//float* vertices=myCubeVertices;
-//float* texCoords= myCubeTexCoords;
-//float* colors = myCubeColors;
-//float* normals = myCubeNormals;
-//int vertexCount = myCubeVertexCount;
-
-//Uncomment to draw a teapot
-//float* vertices = myTeapotVertices;
-//float* texCoords = myTeapotTexCoords;
-//float* colors = myTeapotColors;
-//float* normals = myTeapotVertexNormals;
-//int vertexCount = myTeapotVertexCount;
-
+Spaceship ss; // spaceship
 
 //Error processing callback procedure
 void error_callback(int error, const char* description) {
@@ -70,21 +47,29 @@ void error_callback(int error, const char* description) {
 }
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-	if (action == GLFW_PRESS) {
-		if (key == GLFW_KEY_LEFT) rot_vel_x = ROTATION_VELOCITY;
-		if (key == GLFW_KEY_RIGHT) rot_vel_x = -ROTATION_VELOCITY;
-		if (key == GLFW_KEY_UP) rot_vel_y = -ROTATION_VELOCITY;
-		if (key == GLFW_KEY_DOWN) rot_vel_y = ROTATION_VELOCITY;
-		if (key == GLFW_KEY_W) vel = VELOCITY;
-		if (key == GLFW_KEY_S) vel = -VELOCITY;
-	}
-	if (action == GLFW_RELEASE) {
-		if (key == GLFW_KEY_LEFT) rot_vel_x = 0;
-		if (key == GLFW_KEY_RIGHT) rot_vel_x = 0;
-		if (key == GLFW_KEY_UP) rot_vel_y = 0;
-		if (key == GLFW_KEY_DOWN) rot_vel_y = 0;
-		if (key == GLFW_KEY_W) vel = 0;
-		if (key == GLFW_KEY_S) vel = 0;
+
+	switch (action) {
+		case GLFW_PRESS: {
+			if (key == GLFW_KEY_LEFT) ss.rot_vel.x += ROTATION_VELOCITY;
+			if (key == GLFW_KEY_RIGHT) ss.rot_vel.x -= ROTATION_VELOCITY;
+			if (key == GLFW_KEY_UP) ss.rot_vel.y -= ROTATION_VELOCITY;
+			if (key == GLFW_KEY_DOWN) ss.rot_vel.y += ROTATION_VELOCITY;
+			if (key == GLFW_KEY_W) ss.vel.x += VELOCITY;
+			if (key == GLFW_KEY_S) ss.vel.x -= VELOCITY;
+			break;
+		}
+		case GLFW_RELEASE: {
+			if (key == GLFW_KEY_LEFT) ss.rot_vel.x -= ROTATION_VELOCITY;
+			if (key == GLFW_KEY_RIGHT) ss.rot_vel.x += ROTATION_VELOCITY;
+			if (key == GLFW_KEY_UP) ss.rot_vel.y += ROTATION_VELOCITY;
+			if (key == GLFW_KEY_DOWN) ss.rot_vel.y -= ROTATION_VELOCITY;
+			if (key == GLFW_KEY_W) ss.vel.x -= VELOCITY;
+			if (key == GLFW_KEY_S) ss.vel.x += VELOCITY;
+			break;
+		}
+		default: {
+			//
+		}
 	}
 }
 
@@ -94,57 +79,24 @@ void windowResizeCallback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
-GLuint readTexture(const char* filename) {
-	GLuint tex;
-	glActiveTexture(GL_TEXTURE0);
-
-	//Load into computer's memory
-	std::vector<unsigned char> image;   //Allocate a vector for image storage
-	unsigned width, height;   //Variables for image size
-	//Read image
-	unsigned error = lodepng::decode(image, width, height, filename);
-
-	//Import into graphics card's memory
-	glGenTextures(1, &tex); //Initialize one handle
-	glBindTexture(GL_TEXTURE_2D, tex); //Activate the handle
-	//Import image into graphics card's memory associated with the handle
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image.data());
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	return tex;
-}
-
 //Initialization code procedure
 void initOpenGLProgram(GLFWwindow* window) {
-	//************Place any code here that needs to be executed once, at the program start************
 	glClearColor(0, 0, 0, 1);
 	glEnable(GL_DEPTH_TEST);
 	glfwSetWindowSizeCallback(window, windowResizeCallback);
 	glfwSetKeyCallback(window, keyCallback);
 	sp = new ShaderProgram("v_simplest.glsl", NULL, "f_simplest.glsl");
-	spaceCraftModel = loadOBJ("models/longBlue/longBlue.obj");
-	//spaceCraftModel = loadOBJ("models/futuristic/futuristic.obj");
-	tex0 = readTexture("models/longBlue/longBlue.png");
-	//tex0 = readTexture("models/futuristic/AircraftS.png");
 
-	vertices = &spaceCraftModel.verticies[0];
-	texCoords = &spaceCraftModel.texCoords[0];
-	normals = &spaceCraftModel.vertexNormals[0];
-	vertexCount = spaceCraftModel.vertexCount;
+	ss.init();
 }
 
 //Release resources allocated by the program
 void freeOpenGLProgram(GLFWwindow* window) {
-	//************Place any code here that needs to be executed once, after the main loop ends************
 	delete sp;
 }
 
 //Drawing procedure
-void drawScene(GLFWwindow* window, float distance_z, float angle_x, float angle_y) {
-	//************Place any code here that draws something inside the window******************l
+void drawScene(GLFWwindow* window) {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -154,36 +106,36 @@ void drawScene(GLFWwindow* window, float distance_z, float angle_x, float angle_
 		glm::vec3(0.0f, 1.0f, 0.0f)); // up vector
 	glm::mat4 P = glm::perspective(60.0f * PI / 180.0f, 1.0f, 1.0f, 100.0f); //compute projection matrix
 
-	sp->use();//activate shading program
+	sp->use(); //activate shading program
+
 	//Send parameters to graphics card
 	glUniformMatrix4fv(sp->u("P"), 1, false, glm::value_ptr(P));
 	glUniformMatrix4fv(sp->u("V"), 1, false, glm::value_ptr(V));
 
-
 	//M = glm::translate(M, glm::vec3(0.0f, -10.0f, 0.0f));
 	glm::mat4 M = glm::mat4(1.0f);
-	M = glm::translate(M, glm::vec3(0.0f, -10.0f, distance_z + 20.0f));
+	M = glm::translate(M, glm::vec3(0.0f, -10.0f, ss.pos.x + 20.0f));
 
-	M = glm::rotate(M, angle_x + PI, glm::vec3(0.0f, 1.0f, 0.0f));
-	M = glm::rotate(M, angle_y - PI / 3, glm::vec3(1.0f, 0.0f, 0.0f));
+	M = glm::rotate(M, ss.rot.x + PI, glm::vec3(0.0f, 1.0f, 0.0f));
+	M = glm::rotate(M, ss.rot.y - PI / 3, glm::vec3(1.0f, 0.0f, 0.0f));
 
 	M = glm::scale(M, glm::vec3(0.003f, 0.003f, 0.003f));
 	glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M));
 
 	glEnableVertexAttribArray(sp->a("vertex")); //Enable sending data to the attribute vertex
-	glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, vertices); //Specify source of the data for the attribute vertex
+	glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, &(ss.model.verticies[0])); //Specify source of the data for the attribute vertex
 
 	glEnableVertexAttribArray(sp->a("normal")); //Enable sending data to the attribute vertex
-	glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, normals); //Specify source of the data for the attribute vertex
+	glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, &(ss.model.vertexNormals[0])); //Specify source of the data for the attribute vertex
 
 	glEnableVertexAttribArray(sp->a("texCoord0")); //Enable sending data to the attribute color
-	glVertexAttribPointer(sp->a("texCoord0"), 2, GL_FLOAT, false, 0, texCoords); //Specify source of the data for the attribute color
+	glVertexAttribPointer(sp->a("texCoord0"), 2, GL_FLOAT, false, 0, &(ss.model.texCoords[0])); //Specify source of the data for the attribute color
 
 	glUniform1i(sp->u("textureMap0"), 0);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, tex0);
+	glBindTexture(GL_TEXTURE_2D, ss.texture);
 
-	glDrawArrays(GL_TRIANGLES, 0, vertexCount); //Draw the object
+	glDrawArrays(GL_TRIANGLES, 0, ss.model.vertexCount); //Draw the object
 
 	glDisableVertexAttribArray(sp->a("vertex")); //Disable sending data to the attribute vertex
 	glDisableVertexAttribArray(sp->a("normal")); //Disable sending data to the attribute normal
@@ -203,7 +155,8 @@ int main(void)
 		exit(EXIT_FAILURE);
 	}
 
-	window = glfwCreateWindow(1000, 1000, "OpenGL", NULL, NULL);  //Create a window 500pxx500px titled "OpenGL" and an OpenGL context associated with it.
+	//Create a window titled "OpenGL" and an OpenGL context associated with it.
+	window = glfwCreateWindow(1000, 1000, "Asteroids 3D", NULL, NULL);
 
 	if (!window) //If no window is opened then close the program
 	{
@@ -222,19 +175,16 @@ int main(void)
 
 	initOpenGLProgram(window); //Call initialization procedure
 
-
-	float distance_z = 0; //current rotation position of the object, z axis
-	float angle_x = 0; //current rotation angle of the object, x axis
-	float angle_y = 0; //current rotation angle of the object, y axis
 	glfwSetTime(0); //Zero the timer
+
 	//Main application loop
 	while (!glfwWindowShouldClose(window)) //As long as the window shouldnt be closed yet...
 	{
-		distance_z += vel * glfwGetTime(); //Add angle by which the object was rotated in the previous iteration
-		angle_x += rot_vel_x * glfwGetTime(); //Add angle by which the object was rotated in the previous iteration
-		angle_y += rot_vel_y * glfwGetTime(); //Add angle by which the object was rotated in the previous iteration
-		glfwSetTime(0); //Zero the timer
-		drawScene(window, distance_z, angle_x, angle_y); //Execute drawing procedure
+		ss.update(glfwGetTime());
+
+		glfwSetTime(0);
+
+		drawScene(window); //Execute drawing procedure
 		glfwPollEvents(); //Process callback procedures corresponding to the events that took place up to now
 	}
 	freeOpenGLProgram(window);
