@@ -121,10 +121,6 @@ void drawScene(GLFWwindow* window) {
 
 	ss.draw(sp);
 
-	glDisableVertexAttribArray(sp->a("vertex")); //Disable sending data to the attribute vertex
-	glDisableVertexAttribArray(sp->a("normal")); //Disable sending data to the attribute normal
-	glDisableVertexAttribArray(sp->a("texCoord0")); //Disable sending data to the attribute texCoord0
-
 	glfwSwapBuffers(window); //Copy back buffer to front buffer
 }
 

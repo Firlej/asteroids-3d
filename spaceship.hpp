@@ -67,12 +67,12 @@ public:
 
 	void draw(ShaderProgram* sp) {
 		glm::mat4 M = glm::mat4(1.0f);
-		M = glm::translate(M, pos + glm::vec3(0.0f, -10.0f, 6.0f));
+		M = glm::translate(M, pos + glm::vec3(0.0f, -10.0f, 15.0f));
 
 		M = glm::rotate(M, rot.y + PI, glm::vec3(0.0f, 1.0f, 0.0f));
 		M = glm::rotate(M, rot.x - PI / 2, glm::vec3(1.0f, 0.0f, 0.0f));
 
-		M = glm::scale(M, glm::vec3(0.002f, 0.002f, 0.002f));
+		//M = glm::scale(M, glm::vec3(0.002f, 0.002f, 0.002f));
 		glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M));
 
 		glEnableVertexAttribArray(sp->a("vertex")); //Enable sending data to the attribute vertex
@@ -89,6 +89,10 @@ public:
 		glBindTexture(GL_TEXTURE_2D, texture);
 
 		glDrawArrays(GL_TRIANGLES, 0, model.vertexCount); //Draw the object
+
+		glDisableVertexAttribArray(sp->a("vertex")); //Disable sending data to the attribute vertex
+		glDisableVertexAttribArray(sp->a("normal")); //Disable sending data to the attribute normal
+		glDisableVertexAttribArray(sp->a("texCoord0")); //Disable sending data to the attribute texCoord0
 	}
 
 	void update(float delta) {
