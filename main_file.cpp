@@ -55,8 +55,8 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 			if (key == GLFW_KEY_RIGHT) ss.rot_acc.x = -ROTATION_VELOCITY;
 			if (key == GLFW_KEY_UP) ss.rot_acc.y = -ROTATION_VELOCITY;
 			if (key == GLFW_KEY_DOWN) ss.rot_acc.y = ROTATION_VELOCITY;
-			if (key == GLFW_KEY_W) ss.acc.x = ACCELERATION;
-			if (key == GLFW_KEY_S) ss.acc.x = -ACCELERATION;
+			if (key == GLFW_KEY_W) ss.acc.z = ACCELERATION;
+			if (key == GLFW_KEY_S) ss.acc.z = -ACCELERATION;
 			break;
 		}
 		case GLFW_RELEASE: {
@@ -64,8 +64,8 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 			if (key == GLFW_KEY_RIGHT) ss.rot_acc.x = 0;
 			if (key == GLFW_KEY_UP) ss.rot_acc.y = 0;
 			if (key == GLFW_KEY_DOWN) ss.rot_acc.y = 0;
-			if (key == GLFW_KEY_W) ss.acc.x = 0;
-			if (key == GLFW_KEY_S) ss.acc.x = 0;
+			if (key == GLFW_KEY_W) ss.acc.z = 0;
+			if (key == GLFW_KEY_S) ss.acc.z = 0;
 			break;
 		}
 		default: {
@@ -102,8 +102,8 @@ void drawScene(GLFWwindow* window) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::mat4 V = glm::lookAt(
-		ss.pos + glm::vec3(0.0f, 10.0f, -20.0f), // camera located at
-		ss.pos + glm::vec3(0.0f, 0.0f, 0.0f), // looking at
+		glm::vec3(0.0f, 0.0f, -10.0f), // camera located at
+		glm::vec3(0.0f, 0.0f, 0.0f), // looking at
 		glm::vec3(0.0f, 1.0f, 0.0f) // up vector
 	); 
 	glm::mat4 P = glm::perspective(60.0f * PI / 180.0f, 1.0f, 1.0f, 100.0f); //compute projection matrix
@@ -117,10 +117,10 @@ void drawScene(GLFWwindow* window) {
 	//M = glm::translate(M, glm::vec3(0.0f, -10.0f, 0.0f));
 	glm::mat4 M = glm::mat4(1.0f);
 	//M = glm::translate(M, glm::vec3(0.0f, 0.0f, ss.pos.x));
-	M = glm::translate(M, ss.pos + glm::vec3(0.0f, -10.0f, 20.0f));
+	M = glm::translate(M, ss.pos + glm::vec3(0.0f, -10.0f, 6.0f));
 
 	M = glm::rotate(M, ss.rot.x + PI, glm::vec3(0.0f, 1.0f, 0.0f));
-	M = glm::rotate(M, ss.rot.y - PI / 3, glm::vec3(1.0f, 0.0f, 0.0f));
+	M = glm::rotate(M, ss.rot.y - PI / 2, glm::vec3(1.0f, 0.0f, 0.0f)); // -PI / 3
 
 	// M = glm::rotate(M, ss.rot.x + PI / 3, glm::vec3(1.0f, 0.0f, 0.0f));
 	// M = glm::rotate(M, ss.rot.y + PI, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -128,7 +128,7 @@ void drawScene(GLFWwindow* window) {
 
 
 
-	M = glm::scale(M, glm::vec3(0.003f, 0.003f, 0.003f));
+	M = glm::scale(M, glm::vec3(0.002f, 0.002f, 0.002f));
 	glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M));
 
 	glEnableVertexAttribArray(sp->a("vertex")); //Enable sending data to the attribute vertex

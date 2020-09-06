@@ -54,14 +54,19 @@ public:
 		float friction = 0.5;
 		float frictionFactor = pow(friction, delta);
 
-		vel += acc * delta;
-		pos += vel * (frictionFactor - 1) / (float) log(friction);
-		vel *= frictionFactor;
-
 		rot_vel += rot_acc * delta;
 		rot += rot_vel * (frictionFactor - 1) / (float) log(friction);
 		rot_vel *= frictionFactor;
-		std::cout << glm::to_string(rot) << std::endl;
+
+		glm::mat4 rotationMat(1.0f); // Creates a identity matrix
+		rotationMat = glm::rotate(rotationMat, rot.x, glm::vec3(0.0f, 1.0f, 0.0f));
+		rotationMat = glm::rotate(rotationMat, -rot.y, glm::vec3(1.0f, 0.0f, 0.0f));
+		glm::vec3 acc_rot = glm::vec3(rotationMat * glm::vec4(acc * delta, 1.0f));
+		vel += acc_rot;
+		pos += vel * (frictionFactor - 1) / (float)log(friction);
+		vel *= frictionFactor;
+
+		std::cout << glm::to_string(pos) << std::endl;
 	}
 };
 
