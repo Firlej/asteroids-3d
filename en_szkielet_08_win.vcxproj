@@ -26,6 +26,7 @@
     <ClInclude Include="myCube.h" />
     <ClInclude Include="myTeapot.h" />
     <ClInclude Include="shaderprogram.h" />
+    <ClInclude Include="spaceship.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lodepng.cpp" />

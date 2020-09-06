@@ -51,19 +51,19 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 	switch (action) {
 		case GLFW_PRESS: {
-			if (key == GLFW_KEY_LEFT) ss.rot_acc.x = ROTATION_VELOCITY;
-			if (key == GLFW_KEY_RIGHT) ss.rot_acc.x = -ROTATION_VELOCITY;
-			if (key == GLFW_KEY_UP) ss.rot_acc.y = -ROTATION_VELOCITY;
-			if (key == GLFW_KEY_DOWN) ss.rot_acc.y = ROTATION_VELOCITY;
+			if (key == GLFW_KEY_LEFT) ss.rot_acc.y = ROTATION_VELOCITY;
+			if (key == GLFW_KEY_RIGHT) ss.rot_acc.y = -ROTATION_VELOCITY;
+			if (key == GLFW_KEY_UP) ss.rot_acc.x = -ROTATION_VELOCITY;
+			if (key == GLFW_KEY_DOWN) ss.rot_acc.x = ROTATION_VELOCITY;
 			if (key == GLFW_KEY_W) ss.acc.z = ACCELERATION;
 			if (key == GLFW_KEY_S) ss.acc.z = -ACCELERATION;
 			break;
 		}
 		case GLFW_RELEASE: {
-			if (key == GLFW_KEY_LEFT) ss.rot_acc.x = 0;
-			if (key == GLFW_KEY_RIGHT) ss.rot_acc.x = 0;
-			if (key == GLFW_KEY_UP) ss.rot_acc.y = 0;
-			if (key == GLFW_KEY_DOWN) ss.rot_acc.y = 0;
+			if (key == GLFW_KEY_LEFT) ss.rot_acc.y = 0;
+			if (key == GLFW_KEY_RIGHT) ss.rot_acc.y = 0;
+			if (key == GLFW_KEY_UP) ss.rot_acc.x = 0;
+			if (key == GLFW_KEY_DOWN) ss.rot_acc.x = 0;
 			if (key == GLFW_KEY_W) ss.acc.z = 0;
 			if (key == GLFW_KEY_S) ss.acc.z = 0;
 			break;
@@ -96,6 +96,11 @@ void freeOpenGLProgram(GLFWwindow* window) {
 	delete sp;
 }
 
+// run updates on all objects
+void update_all(float delta) {
+	ss.update(delta);
+}
+
 //Drawing procedure
 void drawScene(GLFWwindow* window) {
 
@@ -106,7 +111,7 @@ void drawScene(GLFWwindow* window) {
 		glm::vec3(0.0f, 0.0f, 0.0f), // looking at
 		glm::vec3(0.0f, 1.0f, 0.0f) // up vector
 	); 
-	glm::mat4 P = glm::perspective(60.0f * PI / 180.0f, 1.0f, 1.0f, 100.0f); //compute projection matrix
+	glm::mat4 P = glm::perspective(60.0f * PI / 180.0f, 1.0f, 1.0f, 10000.0f); //compute projection matrix
 
 	sp->use(); //activate shading program
 
@@ -114,37 +119,7 @@ void drawScene(GLFWwindow* window) {
 	glUniformMatrix4fv(sp->u("P"), 1, false, glm::value_ptr(P));
 	glUniformMatrix4fv(sp->u("V"), 1, false, glm::value_ptr(V));
 
-	//M = glm::translate(M, glm::vec3(0.0f, -10.0f, 0.0f));
-	glm::mat4 M = glm::mat4(1.0f);
-	//M = glm::translate(M, glm::vec3(0.0f, 0.0f, ss.pos.x));
-	M = glm::translate(M, ss.pos + glm::vec3(0.0f, -10.0f, 6.0f));
-
-	M = glm::rotate(M, ss.rot.x + PI, glm::vec3(0.0f, 1.0f, 0.0f));
-	M = glm::rotate(M, ss.rot.y - PI / 2, glm::vec3(1.0f, 0.0f, 0.0f)); // -PI / 3
-
-	// M = glm::rotate(M, ss.rot.x + PI / 3, glm::vec3(1.0f, 0.0f, 0.0f));
-	// M = glm::rotate(M, ss.rot.y + PI, glm::vec3(0.0f, 1.0f, 0.0f));
-	// M = glm::rotate(M, ss.rot.z, glm::vec3(0.0f, 0.0f, 1.0f));
-
-
-
-	M = glm::scale(M, glm::vec3(0.002f, 0.002f, 0.002f));
-	glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M));
-
-	glEnableVertexAttribArray(sp->a("vertex")); //Enable sending data to the attribute vertex
-	glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, &(ss.model.verticies[0])); //Specify source of the data for the attribute vertex
-
-	glEnableVertexAttribArray(sp->a("normal")); //Enable sending data to the attribute vertex
-	glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, &(ss.model.vertexNormals[0])); //Specify source of the data for the attribute vertex
-
-	glEnableVertexAttribArray(sp->a("texCoord0")); //Enable sending data to the attribute color
-	glVertexAttribPointer(sp->a("texCoord0"), 2, GL_FLOAT, false, 0, &(ss.model.texCoords[0])); //Specify source of the data for the attribute color
-
-	glUniform1i(sp->u("textureMap0"), 0);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, ss.texture);
-
-	glDrawArrays(GL_TRIANGLES, 0, ss.model.vertexCount); //Draw the object
+	ss.draw(sp);
 
 	glDisableVertexAttribArray(sp->a("vertex")); //Disable sending data to the attribute vertex
 	glDisableVertexAttribArray(sp->a("normal")); //Disable sending data to the attribute normal
@@ -189,8 +164,7 @@ int main(void)
 	//Main application loop
 	while (!glfwWindowShouldClose(window)) //As long as the window shouldnt be closed yet...
 	{
-		ss.update(glfwGetTime());
-
+		update_all(glfwGetTime());
 		glfwSetTime(0);
 
 		drawScene(window); //Execute drawing procedure
