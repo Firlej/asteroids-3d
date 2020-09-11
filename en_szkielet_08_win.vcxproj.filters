@@ -39,6 +39,9 @@
     <ClInclude Include="spaceship.hpp">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="asteroid.hpp">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lodepng.cpp">

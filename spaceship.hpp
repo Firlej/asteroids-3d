@@ -65,6 +65,26 @@ public:
 		//tex0 = readTexture("models/futuristic/AircraftS.png");
 	}
 
+	void update(float delta) {
+		// https://gamedev.stackexchange.com/a/174236
+		float friction = 0.1;
+		float frictionFactor = pow(friction, delta);
+
+		rot_vel += rot_acc * delta;
+		rot += rot_vel * (frictionFactor - 1) / (float) log(friction);
+		rot_vel *= frictionFactor;
+
+		glm::mat4 rotationMat(1.0f); // Creates a identity matrix
+		rotationMat = glm::rotate(rotationMat, rot.y, glm::vec3(0.0f, 1.0f, 0.0f));
+		rotationMat = glm::rotate(rotationMat, -rot.x, glm::vec3(1.0f, 0.0f, 0.0f));
+		glm::vec3 acc_rot = glm::vec3(rotationMat * glm::vec4(acc * delta, 1.0f));
+		vel += acc_rot;
+		pos += vel * (frictionFactor - 1) / (float)log(friction);
+		vel *= frictionFactor;
+
+		std::cout << glm::to_string(pos) << std::endl;
+	}
+
 	void draw(ShaderProgram* sp) {
 		glm::mat4 M = glm::mat4(1.0f);
 		M = glm::translate(M, pos + glm::vec3(0.0f, -10.0f, 15.0f));
@@ -93,26 +113,6 @@ public:
 		glDisableVertexAttribArray(sp->a("vertex")); //Disable sending data to the attribute vertex
 		glDisableVertexAttribArray(sp->a("normal")); //Disable sending data to the attribute normal
 		glDisableVertexAttribArray(sp->a("texCoord0")); //Disable sending data to the attribute texCoord0
-	}
-
-	void update(float delta) {
-		// https://gamedev.stackexchange.com/a/174236
-		float friction = 0.5;
-		float frictionFactor = pow(friction, delta);
-
-		rot_vel += rot_acc * delta;
-		rot += rot_vel * (frictionFactor - 1) / (float) log(friction);
-		rot_vel *= frictionFactor;
-
-		glm::mat4 rotationMat(1.0f); // Creates a identity matrix
-		rotationMat = glm::rotate(rotationMat, rot.y, glm::vec3(0.0f, 1.0f, 0.0f));
-		rotationMat = glm::rotate(rotationMat, -rot.x, glm::vec3(1.0f, 0.0f, 0.0f));
-		glm::vec3 acc_rot = glm::vec3(rotationMat * glm::vec4(acc * delta, 1.0f));
-		vel += acc_rot;
-		pos += vel * (frictionFactor - 1) / (float)log(friction);
-		vel *= frictionFactor;
-
-		std::cout << glm::to_string(pos) << std::endl;
 	}
 };
 

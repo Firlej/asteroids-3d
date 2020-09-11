@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="asteroid.hpp" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="modelStruct.h" />
     <ClInclude Include="loadOBJ.hpp" />
