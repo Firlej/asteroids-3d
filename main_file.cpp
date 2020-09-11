@@ -32,15 +32,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "modelStruct.h"
 #include "loadOBJ.hpp"
 
+#include "tools.hpp"
 #include "spaceship.hpp"
+#include "asteroid.hpp"
 
 const float ROTATION_VELOCITY = PI;
-const float ACCELERATION = 10.0f;
+const float ACCELERATION = 100.0f;
 
 float aspectRatio = 1;
 ShaderProgram* sp; //Pointer to the shader program
 
 Spaceship ss; // spaceship
+Asteroid as; // spaceship
 
 //Error processing callback procedure
 void error_callback(int error, const char* description) {
@@ -89,6 +92,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	sp = new ShaderProgram("v_simplest.glsl", NULL, "f_simplest.glsl");
 
 	ss.init();
+	as.init();
 }
 
 //Release resources allocated by the program
@@ -99,6 +103,7 @@ void freeOpenGLProgram(GLFWwindow* window) {
 // run updates on all objects
 void update_all(float delta) {
 	ss.update(delta);
+	as.update(delta);
 }
 
 //Drawing procedure
@@ -107,8 +112,8 @@ void drawScene(GLFWwindow* window) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::mat4 V = glm::lookAt(
-		glm::vec3(0.0f, 0.0f, -10.0f), // camera located at
-		glm::vec3(0.0f, 0.0f, 0.0f), // looking at
+		ss.pos - (ss.heading() * 10.0f), // camera located at
+		ss.pos + glm::vec3(0.0f, 0.0f, 0.0f), // looking at
 		glm::vec3(0.0f, 1.0f, 0.0f) // up vector
 	); 
 	glm::mat4 P = glm::perspective(60.0f * PI / 180.0f, 1.0f, 1.0f, 10000.0f); //compute projection matrix
@@ -120,6 +125,7 @@ void drawScene(GLFWwindow* window) {
 	glUniformMatrix4fv(sp->u("V"), 1, false, glm::value_ptr(V));
 
 	ss.draw(sp);
+	as.draw(sp);
 
 	glfwSwapBuffers(window); //Copy back buffer to front buffer
 }

@@ -17,27 +17,7 @@
 #include "loadOBJ.hpp"
 #include <math.h>
 
-GLuint readTexture(const char* filename) {
-	GLuint tex;
-	glActiveTexture(GL_TEXTURE0);
 
-	//Load into computer's memory
-	std::vector<unsigned char> image;   //Allocate a vector for image storage
-	unsigned width, height;   //Variables for image size
-	//Read image
-	unsigned error = lodepng::decode(image, width, height, filename);
-
-	//Import into graphics card's memory
-	glGenTextures(1, &tex); //Initialize one handle
-	glBindTexture(GL_TEXTURE_2D, tex); //Activate the handle
-	//Import image into graphics card's memory associated with the handle
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image.data());
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	return tex;
-}
 
 class Spaceship {
 public:
@@ -82,7 +62,16 @@ public:
 		pos += vel * (frictionFactor - 1) / (float)log(friction);
 		vel *= frictionFactor;
 
-		std::cout << glm::to_string(pos) << std::endl;
+		// std::cout << glm::to_string(pos) << std::endl;
+	}
+
+	glm::vec3 heading() {
+		glm::mat4 rotationMat(1.0f); // Creates a identity matrix
+		rotationMat = glm::rotate(rotationMat, rot.y, glm::vec3(0.0f, 1.0f, 0.0f));
+		rotationMat = glm::rotate(rotationMat, -rot.x, glm::vec3(1.0f, 0.0f, 0.0f));
+		glm::vec3 res = glm::normalize(glm::vec3(rotationMat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
+		std::cout << glm::to_string(res) << std::endl;
+		return res;
 	}
 
 	void draw(ShaderProgram* sp) {

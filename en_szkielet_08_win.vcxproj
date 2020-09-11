@@ -28,6 +28,7 @@
     <ClInclude Include="myTeapot.h" />
     <ClInclude Include="shaderprogram.h" />
     <ClInclude Include="spaceship.hpp" />
+    <ClInclude Include="tools.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lodepng.cpp" />
