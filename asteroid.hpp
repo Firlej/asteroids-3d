@@ -57,7 +57,7 @@ public:
 
 	void draw(ShaderProgram* sp) {
 		glm::mat4 M = glm::mat4(1.0f);
-		M = glm::translate(M, pos + glm::vec3(0.0f, -10.0f, 15.0f));
+		M = glm::translate(M, pos);
 
 		M = glm::rotate(M, rot.y + PI, glm::vec3(0.0f, 1.0f, 0.0f));
 		M = glm::rotate(M, rot.x - PI / 2, glm::vec3(1.0f, 0.0f, 0.0f));
