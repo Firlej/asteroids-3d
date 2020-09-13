@@ -78,7 +78,7 @@ public:
 
 	glm::vec3 ceiling() {
 		glm::mat4 rotationMat(1.0f); // Creates a identity matrix
-		//rotationMat = glm::rotate(rotationMat, -PI/2, glm::vec3(1.0f, 0.0f, 0.0f));
+		rotationMat = glm::rotate(rotationMat, -PI/2, glm::vec3(1.0f, 0.0f, 0.0f));
 		rotationMat = glm::rotate(rotationMat, rot.y, glm::vec3(0.0f, 1.0f, 0.0f));
 		rotationMat = glm::rotate(rotationMat, rot.x, glm::vec3(1.0f, 0.0f, 0.0f));
 		glm::vec3 res = glm::normalize(glm::vec3(rotationMat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
