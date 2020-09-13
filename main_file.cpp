@@ -58,8 +58,8 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 			if (key == GLFW_KEY_RIGHT) ss.rot_acc.y = -ROTATION_VELOCITY;
 			if (key == GLFW_KEY_UP) ss.rot_acc.x = -ROTATION_VELOCITY;
 			if (key == GLFW_KEY_DOWN) ss.rot_acc.x = ROTATION_VELOCITY;
-			if (key == GLFW_KEY_W) ss.acc.z = ACCELERATION;
-			if (key == GLFW_KEY_S) ss.acc.z = -ACCELERATION;
+			if (key == GLFW_KEY_W) ss.acc = ACCELERATION;
+			if (key == GLFW_KEY_S) ss.acc = -ACCELERATION;
 			break;
 		}
 		case GLFW_RELEASE: {
@@ -67,8 +67,8 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 			if (key == GLFW_KEY_RIGHT) ss.rot_acc.y = 0;
 			if (key == GLFW_KEY_UP) ss.rot_acc.x = 0;
 			if (key == GLFW_KEY_DOWN) ss.rot_acc.x = 0;
-			if (key == GLFW_KEY_W) ss.acc.z = 0;
-			if (key == GLFW_KEY_S) ss.acc.z = 0;
+			if (key == GLFW_KEY_W) ss.acc = 0;
+			if (key == GLFW_KEY_S) ss.acc = 0;
 			break;
 		}
 		default: {
@@ -119,7 +119,7 @@ void drawScene(GLFWwindow* window) {
 
 	glm::mat4 V = glm::lookAt(
 		
-		glm::vec3(0.0f, 0.0f, -20.0f),
+		glm::vec3(0.0f, 10.0f, -30.0f),
 		glm::vec3(0.0f, 0.0f, 0.0f), // looking at
 		glm::vec3(0.0f, 1.0f, 0.0f) // up vector
 	);

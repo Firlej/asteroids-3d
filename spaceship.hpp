@@ -28,7 +28,7 @@ public:
 
 	glm::vec3 pos = glm::vec3(0, 0, 0);
 	glm::vec3 vel = glm::vec3(0, 0, 0);
-	glm::vec3 acc = glm::vec3(0, 0, 0); // only one dimension is used
+	float acc = 0.0f;
 
 	glm::vec3 rot = glm::vec3(0, 0, 0);
 	glm::vec3 rot_vel = glm::vec3(0, 0, 0);
@@ -58,13 +58,7 @@ public:
 		vec_up_ss = vec_up_calc();
 		vec_right_ss = vec_right_calc();
 
-		glm::mat4 rotationMat(1.0f); // Creates a identity matrix
-		// rotationMat = glm::rotate(rotationMat, rot.y, glm::vec3(0.0f, 1.0f, 0.0f));
-		// rotationMat = glm::rotate(rotationMat, rot.x, glm::vec3(1.0f, 0.0f, 0.0f));
-		rotationMat = glm::rotate(rotationMat, rot.y, vec_up_ss);
-		rotationMat = glm::rotate(rotationMat, rot.x, vec_right_ss);
-		glm::vec3 acc_rot = glm::vec3(rotationMat * glm::vec4(acc * delta, 1.0f));
-		vel += acc_rot;
+		vel += heading() * acc * delta;
 		pos += vel * (frictionFactor - 1) / (float)log(friction);
 		vel *= frictionFactor;
 
@@ -75,6 +69,16 @@ public:
 
 	glm::vec3 heading() {
 		glm::mat4 rotationMat(1.0f); // Creates a identity matrix
+		rotationMat = glm::rotate(rotationMat, rot.y, glm::vec3(0.0f, 1.0f, 0.0f));
+		rotationMat = glm::rotate(rotationMat, rot.x, glm::vec3(1.0f, 0.0f, 0.0f));
+		glm::vec3 res = glm::normalize(glm::vec3(rotationMat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
+		//std::cout << glm::to_string(res) << std::endl;
+		return res;
+	}
+
+	glm::vec3 ceiling() {
+		glm::mat4 rotationMat(1.0f); // Creates a identity matrix
+		//rotationMat = glm::rotate(rotationMat, -PI/2, glm::vec3(1.0f, 0.0f, 0.0f));
 		rotationMat = glm::rotate(rotationMat, rot.y, glm::vec3(0.0f, 1.0f, 0.0f));
 		rotationMat = glm::rotate(rotationMat, rot.x, glm::vec3(1.0f, 0.0f, 0.0f));
 		glm::vec3 res = glm::normalize(glm::vec3(rotationMat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
