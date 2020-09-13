@@ -111,11 +111,19 @@ void drawScene(GLFWwindow* window) {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	//glm::mat4 V = glm::lookAt(
+	//	ss.pos - (ss.heading() * (50.0f + glm::length(ss.vel) / 3)), // camera located at
+	//	ss.pos, // looking at
+	//	glm::vec3(0.0f, 1.0f, 0.0f) // up vector
+	//);
+
 	glm::mat4 V = glm::lookAt(
-		ss.pos - (ss.heading() * (50.0f + glm::length(ss.vel)/3) ), // camera located at
-		ss.pos, // looking at
+		
+		glm::vec3(0.0f, 0.0f, -20.0f),
+		glm::vec3(0.0f, 0.0f, 0.0f), // looking at
 		glm::vec3(0.0f, 1.0f, 0.0f) // up vector
-	); 
+	);
+
 	glm::mat4 P = glm::perspective(60.0f * PI / 180.0f, 1.0f, 1.0f, 10000.0f); //compute projection matrix
 
 	sp->use(); //activate shading program
