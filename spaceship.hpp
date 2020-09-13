@@ -58,13 +58,11 @@ public:
 		vec_up_ss = vec_up_calc();
 		vec_right_ss = vec_right_calc();
 
-		vel += heading() * acc * delta;
+		vel += ceiling() * acc * delta;
 		pos += vel * (frictionFactor - 1) / (float)log(friction);
 		vel *= frictionFactor;
 
-		std::cout << glm::to_string(vec_up_ss) << std::endl;
-
-		// std::cout << glm::to_string(pos) << std::endl;
+		std::cout << glm::to_string(ceiling()) << " " << glm::to_string(vec_up_calc()) << std::endl;
 	}
 
 	glm::vec3 heading() {
