@@ -19,24 +19,26 @@
 #include "loadOBJ.hpp"
 #include <math.h>
 
-
+const float FRICTION = 0.1f;
 
 class Spaceship {
 public:
 	Model model;
 	GLuint texture;
 
-	glm::vec3 pos = glm::vec3(0, 0, 0);
-	glm::vec3 vel = glm::vec3(0, 0, 0);
+	glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 vel = glm::vec3(0.0f, 0.0f, 0.01f);
 	float acc = 0.0f;
 
 	glm::quat rot = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-	glm::vec3 rot_vel = glm::vec3(0, 0, 0);
-	glm::vec3 rot_acc = glm::vec3(0, 0, 0);
+	glm::vec3 rot_vel = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 rot_acc = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	/*glm::vec3 heading = glm::vec3(0, 0, 1);
 	glm::vec3 ceiling = glm::vec3(0, 1, 0);
 	glm::vec3 side = glm::vec3(1, 0, 0);*/
+
+	float max_speed = 0;
 
 	void init() {
 		model = loadOBJ("models/longBlue/longBlue.obj");
@@ -63,6 +65,8 @@ public:
 		vel += heading() * acc * delta;
 		pos += vel * (frictionFactor - 1) / (float)log(friction);
 		vel *= frictionFactor;
+
+		max_speed = (glm::length(vel) > max_speed) ? glm::length(vel) : max_speed;
 	}
 
 	glm::vec3 heading() {

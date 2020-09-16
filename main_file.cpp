@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "spaceship.hpp"
 #include "asteroid.hpp"
 
-const float ROTATION_VELOCITY = PI*2;
+const float ROTATION_VELOCITY = PI;
 const float ACCELERATION = 250.0f;
 
 float aspectRatio = 1;
@@ -48,6 +48,8 @@ Asteroid as; // spaceship
 auto eye = glm::vec3(0.0f, 0.0f, 0.0f);
 auto center = glm::vec3(0.0f, 0.0f, 0.0f);
 auto up = glm::vec3(0.0f, 0.0f, 0.0f);
+
+float fov_draw = 0.5f * PI;
 
 //Error processing callback procedure
 void error_callback(int error, const char* description) {
@@ -109,17 +111,13 @@ void update_all(float delta) {
 	as.update(delta);
 }
 
-glm::vec3 lerp(glm::vec3 start, glm::vec3 end, float delta, float rate) {
-	return (end - start) * rate * delta + start;
-}
-
 //Drawing procedure
 void drawScene(GLFWwindow* window, float delta) {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	float rate = 0.999;
-	eye = lerp(eye, ss.pos - (ss.heading() * (50.0f + glm::length(ss.vel) / 3)), delta, rate);
+	float rate = 0.15f;
+	eye = lerp(eye, ss.pos - (ss.heading() * 50.0f), delta, rate);
 	center = lerp(center, ss.pos, delta, rate);
 	up = lerp(up, ss.ceiling(), delta, rate);
 
@@ -129,7 +127,12 @@ void drawScene(GLFWwindow* window, float delta) {
 		up // up vector
 	);
 
-	glm::mat4 P = glm::perspective(60.0f * PI / 180.0f, 1.0f, 1.0f, 10000.0f); //compute projection matrix
+	float fov = map(glm::length(ss.vel), 0, ss.max_speed, 0.5f, 0.65f) * PI;
+	fov_draw = lerp(fov_draw, fov, delta, 0.1);
+
+	std::cout << max_speed(ACCELERATION, FRICTION) << " " << glm::length(ss.vel) << " " << fov << std::endl;
+
+	glm::mat4 P = glm::perspective(fov_draw, 1.0f, 1.0f, 10000.0f); //compute projection matrix
 
 	sp->use(); //activate shading program
 

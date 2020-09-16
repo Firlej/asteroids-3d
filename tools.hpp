@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "lodepng.h"
-#include <math.h>
 
 GLuint readTexture(const char* filename) {
 	GLuint tex;
@@ -30,4 +29,20 @@ GLuint readTexture(const char* filename) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	return tex;
+}
+
+float lerp(float start, float end, float delta, float rate) {
+	return (end - start) * rate + start;
+}
+
+glm::vec3 lerp(glm::vec3 start, glm::vec3 end, float delta, float rate) {
+	return (end - start) * rate + start;
+}
+
+float map(float x, float fromA, float fromB, float toA, float toB) {
+	return (x - fromA) / (fromB - fromA) * (toB - toA) + toA;
+}
+
+float max_speed(float acc, float friction) {
+	return acc / friction;
 }
