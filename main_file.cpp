@@ -59,21 +59,21 @@ void error_callback(int error, const char* description) {
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	switch (action) {
 		case GLFW_PRESS: {
-			if (key == GLFW_KEY_LEFT) ss.rot_acc.y = ROTATION_VELOCITY;
-			if (key == GLFW_KEY_RIGHT) ss.rot_acc.y = -ROTATION_VELOCITY;
-			if (key == GLFW_KEY_UP) ss.rot_acc.x = -ROTATION_VELOCITY;
-			if (key == GLFW_KEY_DOWN) ss.rot_acc.x = ROTATION_VELOCITY;
-			if (key == GLFW_KEY_W) ss.acc = ACCELERATION;
-			if (key == GLFW_KEY_S) ss.acc = -ACCELERATION;
+			if (key == GLFW_KEY_A) ss.rot_acc.y = ROTATION_VELOCITY;
+			if (key == GLFW_KEY_D) ss.rot_acc.y = -ROTATION_VELOCITY;
+			if (key == GLFW_KEY_W) ss.rot_acc.x = -ROTATION_VELOCITY;
+			if (key == GLFW_KEY_S) ss.rot_acc.x = ROTATION_VELOCITY;
+			if (key == GLFW_KEY_UP || key == GLFW_KEY_SPACE) ss.acc = ACCELERATION;
+			if (key == GLFW_KEY_DOWN) ss.acc = -ACCELERATION;
 			break;
 		}
 		case GLFW_RELEASE: {
-			if (key == GLFW_KEY_LEFT) ss.rot_acc.y = 0;
-			if (key == GLFW_KEY_RIGHT) ss.rot_acc.y = 0;
-			if (key == GLFW_KEY_UP) ss.rot_acc.x = 0;
-			if (key == GLFW_KEY_DOWN) ss.rot_acc.x = 0;
-			if (key == GLFW_KEY_W) ss.acc = 0;
-			if (key == GLFW_KEY_S) ss.acc = 0;
+			if (key == GLFW_KEY_A) ss.rot_acc.y = 0;
+			if (key == GLFW_KEY_D) ss.rot_acc.y = 0;
+			if (key == GLFW_KEY_W) ss.rot_acc.x = 0;
+			if (key == GLFW_KEY_S) ss.rot_acc.x = 0;
+			if (key == GLFW_KEY_UP || key == GLFW_KEY_SPACE) ss.acc = 0;
+			if (key == GLFW_KEY_DOWN) ss.acc = 0;
 			break;
 		}
 		default: {

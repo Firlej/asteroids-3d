@@ -27,7 +27,7 @@ public:
 	GLuint texture;
 
 	glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 vel = glm::vec3(0.0f, 0.0f, 0.01f);
+	glm::vec3 vel = glm::vec3(0.0f, 0.0f, 0.000001f);
 	float acc = 0.0f;
 
 	glm::quat rot = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
