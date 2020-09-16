@@ -45,6 +45,10 @@ ShaderProgram* sp; //Pointer to the shader program
 Spaceship ss; // spaceship
 Asteroid as; // spaceship
 
+auto eye = glm::vec3(0.0f, 0.0f, 0.0f);
+auto center = glm::vec3(0.0f, 0.0f, 0.0f);
+auto up = glm::vec3(0.0f, 0.0f, 0.0f);
+
 //Error processing callback procedure
 void error_callback(int error, const char* description) {
 	fputs(description, stderr);
@@ -105,15 +109,24 @@ void update_all(float delta) {
 	as.update(delta);
 }
 
+glm::vec3 lerp(glm::vec3 start, glm::vec3 end, float delta, float rate) {
+	return (end - start) * rate * delta + start;
+}
+
 //Drawing procedure
-void drawScene(GLFWwindow* window) {
+void drawScene(GLFWwindow* window, float delta) {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	float rate = 0.999;
+	eye = lerp(eye, ss.pos - (ss.heading() * (50.0f + glm::length(ss.vel) / 3)), delta, rate);
+	center = lerp(center, ss.pos, delta, rate);
+	up = lerp(up, ss.ceiling(), delta, rate);
+
 	glm::mat4 V = glm::lookAt(
-		ss.pos - (ss.heading() * (50.0f + glm::length(ss.vel) / 3)), // camera located at
-		ss.pos, // looking at
-		ss.ceiling() // up vector
+		eye, // camera located at
+		center, // looking at
+		up // up vector
 	);
 
 	glm::mat4 P = glm::perspective(60.0f * PI / 180.0f, 1.0f, 1.0f, 10000.0f); //compute projection matrix
@@ -166,10 +179,10 @@ int main(void)
 	//Main application loop
 	while (!glfwWindowShouldClose(window)) //As long as the window shouldnt be closed yet...
 	{
-		update_all(glfwGetTime());
+		float delta = glfwGetTime();
 		glfwSetTime(0);
-
-		drawScene(window); //Execute drawing procedure
+		update_all(delta);
+		drawScene(window, delta); //Execute drawing procedure
 		glfwPollEvents(); //Process callback procedures corresponding to the events that took place up to now
 	}
 	freeOpenGLProgram(window);

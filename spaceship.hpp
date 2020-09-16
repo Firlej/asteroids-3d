@@ -52,7 +52,7 @@ public:
 		auto curr_rot = rot_vel * (frictionFactor - 1) / (float)log(friction);
 		rot_vel *= frictionFactor;
 
-		//rot = glm::rotate(rot, 1, curr_rot);
+		// rot = glm::rotate(rot, 1.0f, curr_rot);
 
 		rot = glm::rotate(rot, curr_rot.z, glm::vec3(0.0f, 0.0f, 1.0f));
 		rot = glm::rotate(rot, curr_rot.y, glm::vec3(0.0f, 1.0f, 0.0f));
