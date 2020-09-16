@@ -36,8 +36,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "spaceship.hpp"
 #include "asteroid.hpp"
 
-const float ROTATION_VELOCITY = PI;
-const float ACCELERATION = 100.0f;
+const float ROTATION_VELOCITY = PI*2;
+const float ACCELERATION = 250.0f;
 
 float aspectRatio = 1;
 ShaderProgram* sp; //Pointer to the shader program
