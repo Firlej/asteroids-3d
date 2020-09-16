@@ -51,7 +51,6 @@ void error_callback(int error, const char* description) {
 }
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-
 	switch (action) {
 		case GLFW_PRESS: {
 			if (key == GLFW_KEY_LEFT) ss.rot_acc.y = ROTATION_VELOCITY;
@@ -111,17 +110,10 @@ void drawScene(GLFWwindow* window) {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//glm::mat4 V = glm::lookAt(
-	//	ss.pos - (ss.heading() * (50.0f + glm::length(ss.vel) / 3)), // camera located at
-	//	ss.pos, // looking at
-	//	glm::vec3(0.0f, 1.0f, 0.0f) // up vector
-	//);
-
 	glm::mat4 V = glm::lookAt(
-		
-		glm::vec3(0.0f, 10.0f, -30.0f),
-		glm::vec3(0.0f, 0.0f, 0.0f), // looking at
-		glm::vec3(0.0f, 1.0f, 0.0f) // up vector
+		ss.pos - (ss.heading() * (50.0f + glm::length(ss.vel) / 3)), // camera located at
+		ss.pos, // looking at
+		ss.ceiling() // up vector
 	);
 
 	glm::mat4 P = glm::perspective(60.0f * PI / 180.0f, 1.0f, 1.0f, 10000.0f); //compute projection matrix

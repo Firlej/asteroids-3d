@@ -71,6 +71,14 @@ public:
 		return res;
 	}
 
+	glm::vec3 ceiling() {
+		glm::mat4 rotationMat = glm::mat4(1.0f);
+		rotationMat *= glm::toMat4(rot);
+		rotationMat = glm::rotate(rotationMat, -PI / 2, glm::vec3(1.0f, 0.0f, 0.0f));
+		glm::vec3 res = glm::normalize(glm::vec3(rotationMat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
+		return res;
+	}
+
 	/*float angleBetween(glm::vec3 a, glm::vec3 b) {
 		return glm::acos(glm::dot(glm::normalize(a), glm::normalize(b)));
 	}*/
