@@ -36,8 +36,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "spaceship.hpp"
 #include "asteroid.hpp"
 
-const float ROTATION_VELOCITY = PI;
-const float ACCELERATION = 100.0f;
+const float ROTATION_VELOCITY = PI*2;
+const float ACCELERATION = 250.0f;
 
 float aspectRatio = 1;
 ShaderProgram* sp; //Pointer to the shader program
@@ -51,15 +51,14 @@ void error_callback(int error, const char* description) {
 }
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-
 	switch (action) {
 		case GLFW_PRESS: {
 			if (key == GLFW_KEY_LEFT) ss.rot_acc.y = ROTATION_VELOCITY;
 			if (key == GLFW_KEY_RIGHT) ss.rot_acc.y = -ROTATION_VELOCITY;
 			if (key == GLFW_KEY_UP) ss.rot_acc.x = -ROTATION_VELOCITY;
 			if (key == GLFW_KEY_DOWN) ss.rot_acc.x = ROTATION_VELOCITY;
-			if (key == GLFW_KEY_W) ss.acc.z = ACCELERATION;
-			if (key == GLFW_KEY_S) ss.acc.z = -ACCELERATION;
+			if (key == GLFW_KEY_W) ss.acc = ACCELERATION;
+			if (key == GLFW_KEY_S) ss.acc = -ACCELERATION;
 			break;
 		}
 		case GLFW_RELEASE: {
@@ -67,8 +66,8 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 			if (key == GLFW_KEY_RIGHT) ss.rot_acc.y = 0;
 			if (key == GLFW_KEY_UP) ss.rot_acc.x = 0;
 			if (key == GLFW_KEY_DOWN) ss.rot_acc.x = 0;
-			if (key == GLFW_KEY_W) ss.acc.z = 0;
-			if (key == GLFW_KEY_S) ss.acc.z = 0;
+			if (key == GLFW_KEY_W) ss.acc = 0;
+			if (key == GLFW_KEY_S) ss.acc = 0;
 			break;
 		}
 		default: {
@@ -112,10 +111,11 @@ void drawScene(GLFWwindow* window) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::mat4 V = glm::lookAt(
-		ss.pos - (ss.heading() * (50.0f + glm::length(ss.vel)/3) ), // camera located at
+		ss.pos - (ss.heading() * (50.0f + glm::length(ss.vel) / 3)), // camera located at
 		ss.pos, // looking at
-		glm::vec3(0.0f, 1.0f, 0.0f) // up vector
-	); 
+		ss.ceiling() // up vector
+	);
+
 	glm::mat4 P = glm::perspective(60.0f * PI / 180.0f, 1.0f, 1.0f, 10000.0f); //compute projection matrix
 
 	sp->use(); //activate shading program
