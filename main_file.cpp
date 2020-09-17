@@ -13,7 +13,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #define GLM_FORCE_RADIANS
 
 #include <GL/glew.h>
@@ -42,9 +41,20 @@ const float ACCELERATION = 250.0f;
 float aspectRatio = 1;
 ShaderProgram* sp; //Pointer to the shader program
 
-Spaceship ss; // spaceship
-Asteroid as; // asteroid
-Bullet bullet; // bullet
+ // spaceship
+Model ssModel;
+GLuint ssTexture;
+Spaceship ss;
+
+ // asteroid
+Model asModel;
+GLuint asTexture;
+Asteroid as;
+
+// bullet
+Model missleModel;
+GLuint missleTexture;
+Missle missle;
 
 auto eye = glm::vec3(0.0f, 0.0f, 0.0f);
 auto center = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -66,7 +76,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 			if (key == GLFW_KEY_S) ss.rot_acc.x = ROTATION_VELOCITY;
 			if (key == GLFW_KEY_UP || key == GLFW_KEY_SPACE) ss.acc = ACCELERATION;
 			if (key == GLFW_KEY_DOWN) ss.acc = -ACCELERATION;
-			if (key == GLFW_KEY_LEFT_SHIFT) ss.shoot(&bullet);
+			if (key == GLFW_KEY_LEFT_SHIFT) ss.shoot(&missle);
 			break;
 		}
 		case GLFW_RELEASE: {
@@ -98,9 +108,17 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glfwSetKeyCallback(window, keyCallback);
 	sp = new ShaderProgram("v_simplest.glsl", NULL, "f_simplest.glsl");
 
-	ss.init();
-	as.init();
-	bullet.init();
+	ssModel = loadOBJ("models/longBlue/longBlue.obj");
+	ssTexture = readTexture("models/longBlue/longBlue.png");
+	ss = Spaceship(&ssModel, &ssTexture);
+
+	asModel = loadOBJ("models/asteroid/asteroid.obj");
+	asTexture = readTexture("models/asteroid/asteroid.png");
+	as = Asteroid(&asModel, &asTexture);
+
+	missleModel = loadOBJ("models/bulletBall/bulletBall.obj");
+	missleTexture = readTexture("models/bulletBall/bulletBall.png");
+	missle = Missle(&missleModel, &missleTexture);
 }
 
 //Release resources allocated by the program
@@ -112,7 +130,7 @@ void freeOpenGLProgram(GLFWwindow* window) {
 void update_all(float delta) {
 	ss.update(delta);
 	as.update(delta);
-	bullet.update(delta);
+	missle.update(delta);
 }
 
 //Drawing procedure
@@ -146,7 +164,7 @@ void drawScene(GLFWwindow* window, float delta) {
 
 	ss.draw(sp);
 	as.draw(sp);
-	if (bullet.bool_draw) bullet.draw(sp);
+	if (missle.bool_draw) missle.draw(sp);
 
 	glfwSwapBuffers(window); //Copy back buffer to front buffer
 }
