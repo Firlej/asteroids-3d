@@ -62,7 +62,7 @@ public:
 		M = glm::rotate(M, rot.y + PI, glm::vec3(0.0f, 1.0f, 0.0f));
 		M = glm::rotate(M, rot.x - PI / 2, glm::vec3(1.0f, 0.0f, 0.0f));
 
-		M = glm::scale(M, glm::vec3(0.001f, 0.001f, 0.001f));
+		M = glm::scale(M, glm::vec3(0.01f, 0.01f, 0.01f));
 
 		glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M));
 
