@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="asteroid.hpp" />
     <ClInclude Include="constants.h" />
+    <ClInclude Include="Entity.hpp" />
     <ClInclude Include="missle.hpp" />
     <ClInclude Include="modelStruct.h" />
     <ClInclude Include="loadOBJ.hpp" />

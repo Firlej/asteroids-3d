@@ -41,12 +41,12 @@ const float ACCELERATION = 250.0f;
 float aspectRatio = 1;
 ShaderProgram* sp; //Pointer to the shader program
 
- // spaceship
+// spaceship
 Model ssModel;
 GLuint ssTexture;
 Spaceship ss;
 
- // asteroid
+// asteroid
 Model asModel;
 GLuint asTexture;
 Asteroid as;
@@ -139,12 +139,12 @@ void drawScene(GLFWwindow* window, float delta) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	float rate = 0.15f;
-	eye = lerp(eye, ss.pos - (ss.heading() * 50.0f), delta, rate);
+	eye = lerp(eye, ss.pos - (ss.heading() * 50.0f) + ss.ceiling() * 15.0f, delta, rate);
 	center = lerp(center, ss.pos, delta, rate);
 	up = lerp(up, ss.ceiling(), delta, rate);
 
 	glm::mat4 V = glm::lookAt(
-		eye + ss.ceiling() * 15.0f, // camera located at
+		eye, // camera located at
 		center, // looking at
 		up // up vector
 	);
