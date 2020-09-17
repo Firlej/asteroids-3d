@@ -17,6 +17,7 @@
 #include "myTeapot.h"
 #include "modelStruct.h"
 #include "loadOBJ.hpp"
+#include "bullet.hpp"
 #include <math.h>
 
 const float FRICTION = 0.1f;
@@ -83,6 +84,10 @@ public:
 		return res;
 	}
 
+	void shoot(Bullet *bullet) {
+		bullet->fire(pos, vel, heading(), rot_vel);
+	}
+
 	/*float angleBetween(glm::vec3 a, glm::vec3 b) {
 		return glm::acos(glm::dot(glm::normalize(a), glm::normalize(b)));
 	}*/
@@ -93,7 +98,6 @@ public:
 		M = glm::translate(M, pos);
 
 		M *= glm::toMat4(rot);
-
 
 		glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M));
 

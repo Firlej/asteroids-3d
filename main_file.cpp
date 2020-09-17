@@ -43,7 +43,8 @@ float aspectRatio = 1;
 ShaderProgram* sp; //Pointer to the shader program
 
 Spaceship ss; // spaceship
-Asteroid as; // spaceship
+Asteroid as; // asteroid
+Bullet bullet; // bullet
 
 auto eye = glm::vec3(0.0f, 0.0f, 0.0f);
 auto center = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -63,8 +64,9 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 			if (key == GLFW_KEY_D) ss.rot_acc.y = -ROTATION_VELOCITY;
 			if (key == GLFW_KEY_W) ss.rot_acc.x = -ROTATION_VELOCITY;
 			if (key == GLFW_KEY_S) ss.rot_acc.x = ROTATION_VELOCITY;
-			if (key == GLFW_KEY_UP || key == GLFW_KEY_SPACE) ss.acc = ACCELERATION;
+			if (key == GLFW_KEY_UP) ss.acc = ACCELERATION;
 			if (key == GLFW_KEY_DOWN) ss.acc = -ACCELERATION;
+			if (key == GLFW_KEY_SPACE) ss.shoot(&bullet);
 			break;
 		}
 		case GLFW_RELEASE: {
@@ -98,6 +100,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 
 	ss.init();
 	as.init();
+	bullet.init();
 }
 
 //Release resources allocated by the program
@@ -109,6 +112,7 @@ void freeOpenGLProgram(GLFWwindow* window) {
 void update_all(float delta) {
 	ss.update(delta);
 	as.update(delta);
+	bullet.update(delta);
 }
 
 //Drawing procedure
@@ -122,7 +126,7 @@ void drawScene(GLFWwindow* window, float delta) {
 	up = lerp(up, ss.ceiling(), delta, rate);
 
 	glm::mat4 V = glm::lookAt(
-		eye, // camera located at
+		eye + ss.ceiling() * 15.0f, // camera located at
 		center, // looking at
 		up // up vector
 	);
@@ -130,7 +134,7 @@ void drawScene(GLFWwindow* window, float delta) {
 	float fov = map(glm::length(ss.vel), 0, ss.max_speed, 0.5f, 0.65f) * PI;
 	fov_draw = lerp(fov_draw, fov, delta, 0.1);
 
-	std::cout << max_speed(ACCELERATION, FRICTION) << " " << glm::length(ss.vel) << " " << fov << std::endl;
+	//std::cout << max_speed(ACCELERATION, FRICTION) << " " << glm::length(ss.vel) << " " << fov << std::endl;
 
 	glm::mat4 P = glm::perspective(fov_draw, 1.0f, 1.0f, 10000.0f); //compute projection matrix
 
@@ -142,6 +146,7 @@ void drawScene(GLFWwindow* window, float delta) {
 
 	ss.draw(sp);
 	as.draw(sp);
+	if (bullet.bool_draw) bullet.draw(sp);
 
 	glfwSwapBuffers(window); //Copy back buffer to front buffer
 }
