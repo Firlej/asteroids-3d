@@ -64,9 +64,9 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 			if (key == GLFW_KEY_D) ss.rot_acc.y = -ROTATION_VELOCITY;
 			if (key == GLFW_KEY_W) ss.rot_acc.x = -ROTATION_VELOCITY;
 			if (key == GLFW_KEY_S) ss.rot_acc.x = ROTATION_VELOCITY;
-			if (key == GLFW_KEY_UP) ss.acc = ACCELERATION;
+			if (key == GLFW_KEY_UP || key == GLFW_KEY_SPACE) ss.acc = ACCELERATION;
 			if (key == GLFW_KEY_DOWN) ss.acc = -ACCELERATION;
-			if (key == GLFW_KEY_SPACE) ss.shoot(&bullet);
+			if (key == GLFW_KEY_LEFT_SHIFT) ss.shoot(&bullet);
 			break;
 		}
 		case GLFW_RELEASE: {
