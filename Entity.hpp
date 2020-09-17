@@ -15,6 +15,7 @@
 #include "lodepng.h"
 #include "shaderprogram.h"
 
+extern ShaderProgram* sp;
 
 class Entity {
 public:
@@ -22,7 +23,7 @@ public:
 	GLuint* texture = nullptr;
 
 	glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 vel = glm::vec3(0.0f, 0.0f, 0.000001f);
+	glm::vec3 vel = glm::vec3(0.0f, 0.0f, 0.0f);
 	float acc = 0.0f;
 
 	glm::quat rot = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
@@ -31,9 +32,8 @@ public:
 
 	glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
-	float distance(glm::vec3 pos) {
-		return glm::length(this->pos - pos);
-	}
+	float friction = 1.0f;
+	float max_speed = 1;
 
 	Entity() {};
 
@@ -42,9 +42,48 @@ public:
 		this->texture = texture;
 	}
 
-	virtual void update(float) = 0;
+	glm::vec3 heading() {
+		glm::mat4 rotationMat = glm::mat4(rot);
+		glm::vec3 res = glm::normalize(glm::vec3(rotationMat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
+		return res;
+	}
 
-	void draw(ShaderProgram* sp) {
+	glm::vec3 ceiling() {
+		glm::mat4 rotationMat = glm::mat4(1.0f);
+		rotationMat *= glm::toMat4(rot);
+		rotationMat = glm::rotate(rotationMat, -PI / 2, glm::vec3(1.0f, 0.0f, 0.0f));
+		glm::vec3 res = glm::normalize(glm::vec3(rotationMat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
+		return res;
+	}
+
+	void update_static(float delta) {
+		pos += vel * delta;
+	}
+
+	void update(float delta) {
+		// https://gamedev.stackexchange.com/a/174236
+		float frictionFactor = pow(friction, delta);
+
+		rot_vel += rot_acc * delta;
+		auto curr_rot = rot_vel * (frictionFactor - 1) / (float)log(friction);
+		rot_vel *= frictionFactor;
+
+		// rot = glm::rotate(rot, 1.0f, curr_rot);
+
+		rot = glm::rotate(rot, curr_rot.z, glm::vec3(0.0f, 0.0f, 1.0f));
+		rot = glm::rotate(rot, curr_rot.y, glm::vec3(0.0f, 1.0f, 0.0f));
+		rot = glm::rotate(rot, curr_rot.x, glm::vec3(1.0f, 0.0f, 0.0f));
+
+		rot = glm::normalize(rot);
+
+		vel += heading() * acc * delta;
+		pos += vel * (frictionFactor - 1) / (float)log(friction);
+		vel *= frictionFactor;
+
+		max_speed = (glm::length(vel) > max_speed) ? glm::length(vel) : max_speed;
+	}
+
+	void draw() {
 		glm::mat4 M = glm::mat4(1.0f);
 		M = glm::translate(M, pos);
 		M *= glm::toMat4(rot);

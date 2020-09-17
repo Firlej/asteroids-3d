@@ -23,11 +23,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <glm/gtx/string_cast.hpp>
 #include <stdlib.h>
 #include <stdio.h>
+#include <vector>
 #include "constants.h"
 #include "lodepng.h"
 #include "shaderprogram.h"
-#include "myCube.h"
-#include "myTeapot.h"
 #include "modelStruct.h"
 #include "loadOBJ.hpp"
 
@@ -41,20 +40,17 @@ const float ACCELERATION = 250.0f;
 float aspectRatio = 1;
 ShaderProgram* sp; //Pointer to the shader program
 
-// spaceship
-Model ssModel;
-GLuint ssTexture;
+Model spaceship_model;
+GLuint spaceship_texture;
 Spaceship ss;
 
-// asteroid
-Model asModel;
-GLuint asTexture;
-Asteroid as;
+Model asteroid_model;
+GLuint asteroid_texture;
+std::vector<Asteroid> asteroids;
 
-// bullet
-Model missleModel;
-GLuint missleTexture;
-Missle missle;
+Model missle_model;
+GLuint missle_texture;
+std::vector<Missle> missles;
 
 auto eye = glm::vec3(0.0f, 0.0f, 0.0f);
 auto center = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -67,30 +63,36 @@ void error_callback(int error, const char* description) {
 	fputs(description, stderr);
 }
 
-void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-	switch (action) {
-		case GLFW_PRESS: {
-			if (key == GLFW_KEY_A) ss.rot_acc.y = ROTATION_VELOCITY;
-			if (key == GLFW_KEY_D) ss.rot_acc.y = -ROTATION_VELOCITY;
-			if (key == GLFW_KEY_W) ss.rot_acc.x = -ROTATION_VELOCITY;
-			if (key == GLFW_KEY_S) ss.rot_acc.x = ROTATION_VELOCITY;
-			if (key == GLFW_KEY_UP || key == GLFW_KEY_SPACE) ss.acc = ACCELERATION;
-			if (key == GLFW_KEY_DOWN) ss.acc = -ACCELERATION;
-			if (key == GLFW_KEY_LEFT_SHIFT) ss.shoot(&missle);
-			break;
-		}
-		case GLFW_RELEASE: {
-			if (key == GLFW_KEY_A) ss.rot_acc.y = 0;
-			if (key == GLFW_KEY_D) ss.rot_acc.y = 0;
-			if (key == GLFW_KEY_W) ss.rot_acc.x = 0;
-			if (key == GLFW_KEY_S) ss.rot_acc.x = 0;
-			if (key == GLFW_KEY_UP || key == GLFW_KEY_SPACE) ss.acc = 0;
-			if (key == GLFW_KEY_DOWN) ss.acc = 0;
-			break;
-		}
-		default: {
-			//
-		}
+void shoot() {
+	missles.push_back(ss.shoot());
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+	if (action == GLFW_PRESS) {
+		if (button == GLFW_MOUSE_BUTTON_LEFT) shoot();
+	}
+	else if (action == GLFW_RELEASE) {
+		//
+	}
+}
+
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	if (action == GLFW_PRESS) {
+		if (key == GLFW_KEY_A) ss.rot_acc.y = ROTATION_VELOCITY;
+		if (key == GLFW_KEY_D) ss.rot_acc.y = -ROTATION_VELOCITY;
+		if (key == GLFW_KEY_W) ss.rot_acc.x = -ROTATION_VELOCITY;
+		if (key == GLFW_KEY_S) ss.rot_acc.x = ROTATION_VELOCITY;
+		if (key == GLFW_KEY_UP || key == GLFW_KEY_SPACE) ss.acc = ACCELERATION;
+		if (key == GLFW_KEY_DOWN) ss.acc = -ACCELERATION;
+	} else if (action == GLFW_RELEASE) {
+		if (key == GLFW_KEY_A) ss.rot_acc.y = 0;
+		if (key == GLFW_KEY_D) ss.rot_acc.y = 0;
+		if (key == GLFW_KEY_W) ss.rot_acc.x = 0;
+		if (key == GLFW_KEY_S) ss.rot_acc.x = 0;
+		if (key == GLFW_KEY_UP || key == GLFW_KEY_SPACE) ss.acc = 0;
+		if (key == GLFW_KEY_DOWN) ss.acc = 0;
 	}
 }
 
@@ -100,25 +102,30 @@ void windowResizeCallback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
+void init() {
+	spaceship_model = loadOBJ("models/longBlue/longBlue.obj");
+	spaceship_texture = readTexture("models/longBlue/longBlue.png");
+
+	asteroid_model = loadOBJ("models/asteroid/asteroid.obj");
+	asteroid_texture = readTexture("models/asteroid/asteroid.png");
+
+	missle_model = loadOBJ("models/bulletBall/bulletBall.obj");
+	missle_texture = readTexture("models/bulletBall/bulletBall.png");
+
+	ss = Spaceship::new_spaceship();
+	for (int i = 0; i < 1; i++) asteroids.push_back(Asteroid::new_asteroid());
+}
+
 //Initialization code procedure
 void initOpenGLProgram(GLFWwindow* window) {
 	glClearColor(0, 0, 0, 1);
 	glEnable(GL_DEPTH_TEST);
 	glfwSetWindowSizeCallback(window, windowResizeCallback);
-	glfwSetKeyCallback(window, keyCallback);
+	glfwSetKeyCallback(window, key_callback);
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	sp = new ShaderProgram("v_simplest.glsl", NULL, "f_simplest.glsl");
 
-	ssModel = loadOBJ("models/longBlue/longBlue.obj");
-	ssTexture = readTexture("models/longBlue/longBlue.png");
-	ss = Spaceship(&ssModel, &ssTexture);
-
-	asModel = loadOBJ("models/asteroid/asteroid.obj");
-	asTexture = readTexture("models/asteroid/asteroid.png");
-	as = Asteroid(&asModel, &asTexture);
-
-	missleModel = loadOBJ("models/bulletBall/bulletBall.obj");
-	missleTexture = readTexture("models/bulletBall/bulletBall.png");
-	missle = Missle(&missleModel, &missleTexture);
+	init();
 }
 
 //Release resources allocated by the program
@@ -129,8 +136,15 @@ void freeOpenGLProgram(GLFWwindow* window) {
 // run updates on all objects
 void update_all(float delta) {
 	ss.update(delta);
-	as.update(delta);
-	missle.update(delta);
+	for (Asteroid& a : asteroids) a.update_static(delta);
+	for (Missle& m : missles) m.update_static(delta);
+}
+
+// run updates on all objects
+void draw_all() {
+	ss.draw();
+	for (Asteroid& a : asteroids) a.draw();
+	for (Missle& m : missles) m.draw();
 }
 
 //Drawing procedure
@@ -162,9 +176,7 @@ void drawScene(GLFWwindow* window, float delta) {
 	glUniformMatrix4fv(sp->u("P"), 1, false, glm::value_ptr(P));
 	glUniformMatrix4fv(sp->u("V"), 1, false, glm::value_ptr(V));
 
-	ss.draw(sp);
-	as.draw(sp);
-	if (missle.bool_draw) missle.draw(sp);
+	draw_all();
 
 	glfwSwapBuffers(window); //Copy back buffer to front buffer
 }

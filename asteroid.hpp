@@ -17,11 +17,18 @@
 #include "loadOBJ.hpp"
 #include <math.h>
 
+extern Model asteroid_model;
+extern GLuint asteroid_texture;
+
 class Asteroid : public Entity {
 public:
 	Asteroid() {};
-	Asteroid(Model* model, GLuint* texture) : Entity(model, texture) {};
+	Asteroid(Model* model, GLuint* texture) : Entity(model, texture) {
+		//
+	};
 
-	void update(float delta) {};
+	static Asteroid new_asteroid() {
+		return Asteroid(&asteroid_model, &asteroid_texture);
+	}
 };
 
