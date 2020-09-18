@@ -140,12 +140,11 @@ void freeOpenGLProgram(GLFWwindow* window) {
 void update_all(float delta) {
 	ss.update(delta);
 	for (Asteroid& a : asteroids) a.update_static(delta);
+	for (Missle& m : missles) m.update_static(delta);
 
-	for (auto m = missles.begin(); m != missles.end(); m++) {
-		if (m->check_distance(&ss))
-			missles.erase(m--);
-		else
-			m->update_static(delta);
+	for (int i = missles.size(); i-- > 0; ) {
+		if (missles[i].check_distance(&ss))
+			missles.erase(missles.begin() + i);
 	}
 }
 
