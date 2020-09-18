@@ -1,0 +1,40 @@
+#pragma once
+
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
+#include <stdlib.h>
+#include "Entity.hpp"
+
+extern Model missle_model;
+extern GLuint missle_texture;
+extern const float DRAW_DISTANCE;
+
+const float VELOCITY = 50.0f;
+const float LENGTH_SS = 5.0f;
+
+class Missle : public Entity {
+public:
+	Missle() {};
+
+	Missle(Model* model, GLuint* texture, Entity* parent) : Entity(model, texture) {
+		//scale = glm::vec3(0.8f, 0.8f, 0.8f);
+		pos = parent->pos + parent->heading() * LENGTH_SS;
+		vel = parent->heading() * VELOCITY;
+	}
+
+	bool check_distance(Entity* ss) {
+		if (distance(ss) > DRAW_DISTANCE) {
+			return true;
+		}
+		return false;
+	}
+
+	static Missle new_missle(Entity* parent) {
+		return Missle(&missle_model, &missle_texture, parent);
+	}
+};
+

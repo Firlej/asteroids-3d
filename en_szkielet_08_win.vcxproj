@@ -20,8 +20,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="asteroid.hpp" />
-    <ClInclude Include="bullet.hpp" />
     <ClInclude Include="constants.h" />
+    <ClInclude Include="Entity.hpp" />
+    <ClInclude Include="missle.hpp" />
     <ClInclude Include="modelStruct.h" />
     <ClInclude Include="loadOBJ.hpp" />
     <ClInclude Include="lodepng.h" />
