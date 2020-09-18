@@ -62,6 +62,14 @@ public:
 
 	void update_static(float delta) {
 		pos += vel * delta;
+
+		auto curr_rot = rot_vel * delta;
+
+		rot = glm::rotate(rot, curr_rot.z, glm::vec3(0.0f, 0.0f, 1.0f));
+		rot = glm::rotate(rot, curr_rot.y, glm::vec3(0.0f, 1.0f, 0.0f));
+		rot = glm::rotate(rot, curr_rot.x, glm::vec3(1.0f, 0.0f, 0.0f));
+
+		rot = glm::normalize(rot);
 	}
 
 	void update(float delta) {

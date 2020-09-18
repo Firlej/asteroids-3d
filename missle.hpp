@@ -23,7 +23,7 @@ public:
 	Missle(Model* model, GLuint* texture, Entity* parent) : Entity(model, texture) {
 		//scale = glm::vec3(0.8f, 0.8f, 0.8f);
 		pos = parent->pos + parent->heading() * LENGTH_SS;
-		vel = parent->heading() * VELOCITY;
+		vel = parent->vel + parent->heading() * VELOCITY;
 	}
 
 	bool check_distance(Entity* ss) {

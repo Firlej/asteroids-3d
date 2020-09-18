@@ -23,8 +23,9 @@ class Asteroid : public Entity {
 public:
 	Asteroid() {};
 	Asteroid(Model* model, GLuint* texture) : Entity(model, texture) {
-		pos = glm::ballRand(DRAW_DISTANCE / 10);
-		vel = glm::ballRand(4.0f);
+		pos = glm::ballRand(DRAW_DISTANCE / 3);
+		vel = glm::ballRand(10.0f);
+		rot_vel = glm::normalize(glm::ballRand(4.0f)) * 0.2f;
 	};
 
 	static Asteroid new_asteroid() {
