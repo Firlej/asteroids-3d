@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtc/random.hpp>
 #include <stdlib.h>
 #include <stdio.h>
 #include <vector>
@@ -77,7 +78,6 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		//
 	}
 }
-
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	if (action == GLFW_PRESS) {
@@ -146,7 +146,7 @@ void update_all(float delta) {
 		else
 			m->update_static(delta);
 	}
-	std::cout << missles.size() << std::endl;
+	std::cout << glm::length(glm::ballRand(500.0f)) << std::endl;
 }
 
 // run updates on all objects
