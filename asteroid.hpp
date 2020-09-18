@@ -60,7 +60,7 @@ public:
 	}
 
 	void collide(Missle* m) {
-		if (remove) return;
+		if (remove || m->remove) return;
 		if (distance(m) < 12.0f) {
 			m->remove = true;
 			split();
