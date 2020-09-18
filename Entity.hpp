@@ -56,6 +56,10 @@ public:
 		return res;
 	}
 
+	float distance(Entity* en) {
+		return glm::distance(en->pos, pos);
+	}
+
 	void update_static(float delta) {
 		pos += vel * delta;
 	}

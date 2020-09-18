@@ -36,6 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const float ROTATION_VELOCITY = PI;
 const float ACCELERATION = 250.0f;
+const float DRAW_DISTANCE = 500.0f;
 
 float aspectRatio = 1;
 ShaderProgram* sp; //Pointer to the shader program
@@ -86,6 +87,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		if (key == GLFW_KEY_S) ss.rot_acc.x = ROTATION_VELOCITY;
 		if (key == GLFW_KEY_UP || key == GLFW_KEY_SPACE) ss.acc = ACCELERATION;
 		if (key == GLFW_KEY_DOWN) ss.acc = -ACCELERATION;
+		if (key == GLFW_KEY_LEFT_SHIFT) shoot();
 	} else if (action == GLFW_RELEASE) {
 		if (key == GLFW_KEY_A) ss.rot_acc.y = 0;
 		if (key == GLFW_KEY_D) ss.rot_acc.y = 0;
@@ -137,7 +139,14 @@ void freeOpenGLProgram(GLFWwindow* window) {
 void update_all(float delta) {
 	ss.update(delta);
 	for (Asteroid& a : asteroids) a.update_static(delta);
-	for (Missle& m : missles) m.update_static(delta);
+
+	for (auto m = missles.begin(); m != missles.end(); m++) {
+		if (m->check_distance(&ss))
+			missles.erase(m--);
+		else
+			m->update_static(delta);
+	}
+	std::cout << missles.size() << std::endl;
 }
 
 // run updates on all objects
@@ -168,7 +177,7 @@ void drawScene(GLFWwindow* window, float delta) {
 
 	//std::cout << max_speed(ACCELERATION, FRICTION) << " " << glm::length(ss.vel) << " " << fov << std::endl;
 
-	glm::mat4 P = glm::perspective(fov_draw, 1.0f, 1.0f, 10000.0f); //compute projection matrix
+	glm::mat4 P = glm::perspective(fov_draw, 1.0f, 1.0f, DRAW_DISTANCE); //compute projection matrix
 
 	sp->use(); //activate shading program
 

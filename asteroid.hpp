@@ -30,5 +30,6 @@ public:
 	static Asteroid new_asteroid() {
 		return Asteroid(&asteroid_model, &asteroid_texture);
 	}
+
 };
 
