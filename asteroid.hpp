@@ -19,6 +19,7 @@
 
 extern Model asteroid_model;
 extern GLuint asteroid_texture;
+extern const float DRAW_DISTANCE;
 
 class Asteroid : public Entity {
 public:
@@ -28,7 +29,10 @@ public:
 	};
 
 	static Asteroid new_asteroid() {
-		return Asteroid(&asteroid_model, &asteroid_texture);
+		Asteroid as = Asteroid(&asteroid_model, &asteroid_texture);
+		as.pos = glm::ballRand(DRAW_DISTANCE / 4);
+		as.vel = glm::ballRand(4.0f);
+		return as;
 	}
 
 };

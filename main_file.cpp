@@ -37,7 +37,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const float ROTATION_VELOCITY = PI;
 const float ACCELERATION = 250.0f;
-const float DRAW_DISTANCE = 500.0f;
+const float DRAW_DISTANCE = 1000.0f;
+const int NUM_OF_ASTEROIDS = 50;
 
 float aspectRatio = 1;
 ShaderProgram* sp; //Pointer to the shader program
@@ -115,7 +116,7 @@ void init() {
 	missle_texture = readTexture("models/bulletBall/bulletBall.png");
 
 	ss = Spaceship::new_spaceship();
-	for (int i = 0; i < 1; i++) asteroids.push_back(Asteroid::new_asteroid());
+	for (int i = 0; i < NUM_OF_ASTEROIDS; i++) asteroids.push_back(Asteroid::new_asteroid());
 }
 
 //Initialization code procedure
@@ -146,7 +147,6 @@ void update_all(float delta) {
 		else
 			m->update_static(delta);
 	}
-	std::cout << glm::length(glm::ballRand(500.0f)) << std::endl;
 }
 
 // run updates on all objects
