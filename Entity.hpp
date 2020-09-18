@@ -30,10 +30,12 @@ public:
 	glm::vec3 rot_vel = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 rot_acc = glm::vec3(0.0f, 0.0f, 0.0f);
 
-	glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
+	float scale = 1.0f;
 
 	float friction = 1.0f;
 	float max_speed = 1;
+
+	bool remove = false;
 
 	Entity() {};
 
@@ -56,9 +58,11 @@ public:
 		return res;
 	}
 
-	float distance(Entity* en) {
-		return glm::distance(en->pos, pos);
+	float distance(Entity* e) {
+		return glm::distance(e->pos, pos);
 	}
+
+	virtual void update(float) = 0;
 
 	void update_static(float delta) {
 		pos += vel * delta;
@@ -72,7 +76,7 @@ public:
 		rot = glm::normalize(rot);
 	}
 
-	void update(float delta) {
+	void update_dynamic(float delta) {
 		// https://gamedev.stackexchange.com/a/174236
 		float frictionFactor = pow(friction, delta);
 
@@ -99,7 +103,7 @@ public:
 		glm::mat4 M = glm::mat4(1.0f);
 		M = glm::translate(M, pos);
 		M *= glm::toMat4(rot);
-		M = glm::scale(M, scale);
+		M = glm::scale(M, glm::vec3(scale, scale, scale));
 
 		glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M));
 

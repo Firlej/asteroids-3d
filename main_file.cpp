@@ -149,13 +149,28 @@ void freeOpenGLProgram(GLFWwindow* window) {
 void update_all(float delta) {
 	ss.update(delta);
 	sky.update(delta);
-	for (Asteroid& a : asteroids) a.update_static(delta);
-	for (Missle& m : missles) m.update_static(delta);
+	for (Asteroid& a : asteroids) a.update(delta);
+	for (Missle& m : missles) m.update(delta);
 
-	for (int i = missles.size(); i-- > 0; ) {
-		if (missles[i].check_distance(&ss))
+	for (Missle& m : missles) m.check_distance(&ss);
+
+	for (Asteroid& a : asteroids)
+		for (Missle& m : missles)
+			a.collide(&m);
+
+	for (int i = asteroids.size()-1; i >= 0; i--) {
+		if (asteroids[i].remove) {
+			asteroids.insert(asteroids.end(), asteroids[i].children.begin(), asteroids[i].children.end());
+			asteroids.erase(asteroids.begin() + i);
+		}
+	}
+
+	for (int i = missles.size()-1; i >= 0; i--) {
+		if (missles[i].remove)
 			missles.erase(missles.begin() + i);
 	}
+
+	//std::cout << asteroids.size() << std::endl;
 }
 
 // run updates on all objects
@@ -182,12 +197,12 @@ void drawScene(GLFWwindow* window, float delta) {
 		up // up vector
 	);
 
-	float fov = map(glm::length(ss.vel), 0, ss.max_speed, 0.5f, 0.6f) * PI;
+	float fov = map(glm::length(ss.vel), 0, ss.max_speed, 0.5f, 0.55f) * PI;
 	fov_draw = lerp(fov_draw, fov, delta, 0.1f);
 
 	//std::cout << max_speed(ACCELERATION, FRICTION) << " " << glm::length(ss.vel) << " " << fov << std::endl;
 
-	glm::mat4 P = glm::perspective(fov_draw, 1.0f, 1.0f, DRAW_DISTANCE); //compute projection matrix
+	glm::mat4 P = glm::perspective(fov_draw, aspectRatio, 1.0f, DRAW_DISTANCE); //compute projection matrix
 
 	sp->use(); //activate shading program
 
@@ -212,7 +227,8 @@ int main(void)
 	}
 
 	//Create a window titled "OpenGL" and an OpenGL context associated with it.
-	window = glfwCreateWindow(1000, 1000, "Asteroids 3D", NULL, NULL);
+	//window = glfwCreateWindow(1920, 1080, "Asteroids 3D", NULL, NULL);
+	window = glfwCreateWindow(1500, 1500, "Asteroids 3D", NULL, NULL);
 
 	if (!window) //If no window is opened then close the program
 	{

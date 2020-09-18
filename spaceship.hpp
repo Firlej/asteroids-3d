@@ -18,6 +18,7 @@
 #include "missle.hpp"
 #include <math.h>
 #include "Entity.hpp"
+#include "tools.hpp"
 
 extern Model spaceship_model;
 extern GLuint spaceship_texture;
@@ -29,6 +30,10 @@ public:
 	Spaceship(Model* model, GLuint* texture) : Entity(model, texture) {
 		friction = 0.1f;
 	};
+
+	void update(float delta) {
+		update_dynamic(delta);
+	}
 
 	Missle shoot() {
 		return Missle::new_missle(this);

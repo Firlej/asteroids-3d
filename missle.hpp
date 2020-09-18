@@ -21,16 +21,20 @@ public:
 	Missle() {};
 
 	Missle(Model* model, GLuint* texture, Entity* parent) : Entity(model, texture) {
-		//scale = glm::vec3(0.8f, 0.8f, 0.8f);
+		scale = 1.7f;
 		pos = parent->pos + parent->heading() * LENGTH_SS;
 		vel = parent->vel + parent->heading() * VELOCITY;
+		rot_vel = glm::normalize(glm::ballRand(4.0f)) * 0.2f;
 	}
 
-	bool check_distance(Entity* ss) {
+	void update(float delta) {
+		update_static(delta);
+	}
+
+	void check_distance(Entity* ss) {
 		if (distance(ss) > DRAW_DISTANCE) {
-			return true;
+			remove = true;
 		}
-		return false;
 	}
 
 	static Missle new_missle(Entity* parent) {

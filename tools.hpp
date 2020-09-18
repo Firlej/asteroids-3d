@@ -46,3 +46,7 @@ float map(float x, float fromA, float fromB, float toA, float toB) {
 float max_speed(float acc, float friction) {
 	return acc / friction;
 }
+
+float random() {
+	return static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+}

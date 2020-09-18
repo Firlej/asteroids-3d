@@ -24,8 +24,7 @@ public:
 		parent = _parent;
 		// todo is there a way to make the sky model share the same pos variable?
 		pos = parent->pos;
-		float num = 110.0f;
-		scale = glm::vec3(num, num, num);
+		scale = 110.0f;
 	}
 
 	void update(float delta) {
