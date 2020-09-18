@@ -13,8 +13,6 @@
 #include "constants.h"
 #include "lodepng.h"
 #include "shaderprogram.h"
-#include "myCube.h"
-#include "myTeapot.h"
 #include "modelStruct.h"
 #include "loadOBJ.hpp"
 #include "missle.hpp"

@@ -33,6 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "tools.hpp"
 #include "spaceship.hpp"
+#include "sky.hpp"
 #include "asteroid.hpp"
 
 const float ROTATION_VELOCITY = PI;
@@ -42,6 +43,10 @@ const int NUM_OF_ASTEROIDS = 50;
 
 float aspectRatio = 1;
 ShaderProgram* sp; //Pointer to the shader program
+
+Model sky_model;
+GLuint sky_texture;
+Sky sky;
 
 Model spaceship_model;
 GLuint spaceship_texture;
@@ -106,16 +111,20 @@ void windowResizeCallback(GLFWwindow* window, int width, int height) {
 }
 
 void init() {
-	spaceship_model = loadOBJ("models/longBlue/longBlue.obj");
-	spaceship_texture = readTexture("models/longBlue/longBlue.png");
+	spaceship_model = loadOBJ("models/spaceship/spaceship.obj");
+	spaceship_texture = readTexture("models/spaceship/spaceship.png");
+
+	sky_model = loadOBJ("models/sky/sky.obj");
+	sky_texture = readTexture("models/sky/sky.png");
 
 	asteroid_model = loadOBJ("models/asteroid/asteroid.obj");
 	asteroid_texture = readTexture("models/asteroid/asteroid.png");
 
-	missle_model = loadOBJ("models/bulletBall/bulletBall.obj");
-	missle_texture = readTexture("models/bulletBall/bulletBall.png");
+	missle_model = loadOBJ("models/missle/missle.obj");
+	missle_texture = readTexture("models/missle/missle.png");
 
 	ss = Spaceship::new_spaceship();
+	sky = Sky::new_sky(&ss);
 	for (int i = 0; i < NUM_OF_ASTEROIDS; i++) asteroids.push_back(Asteroid::new_asteroid());
 }
 
@@ -139,6 +148,7 @@ void freeOpenGLProgram(GLFWwindow* window) {
 // run updates on all objects
 void update_all(float delta) {
 	ss.update(delta);
+	sky.update(delta);
 	for (Asteroid& a : asteroids) a.update_static(delta);
 	for (Missle& m : missles) m.update_static(delta);
 
@@ -151,6 +161,7 @@ void update_all(float delta) {
 // run updates on all objects
 void draw_all() {
 	ss.draw();
+	sky.draw();
 	for (Asteroid& a : asteroids) a.draw();
 	for (Missle& m : missles) m.draw();
 }
@@ -171,8 +182,8 @@ void drawScene(GLFWwindow* window, float delta) {
 		up // up vector
 	);
 
-	float fov = map(glm::length(ss.vel), 0, ss.max_speed, 0.5f, 0.65f) * PI;
-	fov_draw = lerp(fov_draw, fov, delta, 0.1);
+	float fov = map(glm::length(ss.vel), 0, ss.max_speed, 0.5f, 0.6f) * PI;
+	fov_draw = lerp(fov_draw, fov, delta, 0.1f);
 
 	//std::cout << max_speed(ACCELERATION, FRICTION) << " " << glm::length(ss.vel) << " " << fov << std::endl;
 
@@ -225,7 +236,7 @@ int main(void)
 	//Main application loop
 	while (!glfwWindowShouldClose(window)) //As long as the window shouldnt be closed yet...
 	{
-		float delta = glfwGetTime();
+		float delta = (float)glfwGetTime();
 		glfwSetTime(0);
 		update_all(delta);
 		drawScene(window, delta); //Execute drawing procedure

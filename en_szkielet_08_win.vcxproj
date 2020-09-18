@@ -29,6 +29,7 @@
     <ClInclude Include="myCube.h" />
     <ClInclude Include="myTeapot.h" />
     <ClInclude Include="shaderprogram.h" />
+    <ClInclude Include="sky.hpp" />
     <ClInclude Include="spaceship.hpp" />
     <ClInclude Include="tools.hpp" />
   </ItemGroup>
