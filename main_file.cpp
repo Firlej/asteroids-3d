@@ -35,10 +35,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "spaceship.hpp"
 #include "sky.hpp"
 #include "asteroid.hpp"
+#include "sun.hpp"
 
 const float ROTATION_VELOCITY = PI;
 const float ACCELERATION = 250.0f;
-const float DRAW_DISTANCE = 1000.0f;
+const float DRAW_DISTANCE = 2000.0f;
 const int NUM_OF_ASTEROIDS = 50;
 
 float aspectRatio = 1;
@@ -47,6 +48,10 @@ ShaderProgram* sp; //Pointer to the shader program
 Model sky_model;
 GLuint sky_texture;
 Sky sky;
+
+Model sun_model;
+GLuint sun_texture;
+Sun sun;
 
 Model spaceship_model;
 GLuint spaceship_texture;
@@ -59,6 +64,7 @@ std::vector<Asteroid> asteroids;
 Model missle_model;
 GLuint missle_texture;
 std::vector<Missle> missles;
+
 
 auto eye = glm::vec3(0.0f, 0.0f, 0.0f);
 auto center = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -123,8 +129,12 @@ void init() {
 	missle_model = loadOBJ("models/missle/missle.obj");
 	missle_texture = readTexture("models/missle/missle.png");
 
+	sun_model = loadOBJ("models/sun/sun.obj");
+	sun_texture = readTexture("models/sun/sun.png");
+
 	ss = Spaceship::new_spaceship();
 	sky = Sky::new_sky(&ss);
+	sun = Sun::new_sun(&ss);
 	for (int i = 0; i < NUM_OF_ASTEROIDS; i++) asteroids.push_back(Asteroid::new_asteroid());
 }
 
@@ -149,6 +159,7 @@ void freeOpenGLProgram(GLFWwindow* window) {
 void update_all(float delta) {
 	ss.update(delta);
 	sky.update(delta);
+	sun.update(delta);
 	for (Asteroid& a : asteroids) a.update(delta);
 	for (Missle& m : missles) m.update(delta);
 
@@ -173,13 +184,24 @@ void update_all(float delta) {
 	//std::cout << asteroids.size() << std::endl;
 }
 
-// run updates on all objects
-void draw_all() {
-	ss.draw();
+void draw_far_objects() {
 	sky.draw();
+	sun.draw();
+}
+
+void draw_close_objects() {
+	ss.draw();
 	for (Asteroid& a : asteroids) a.draw();
 	for (Missle& m : missles) m.draw();
 }
+
+// run updates on all objects
+void draw_all() {
+	draw_far_objects();
+	glClear(GL_DEPTH_BUFFER_BIT);
+	draw_close_objects();
+}
+
 
 //Drawing procedure
 void drawScene(GLFWwindow* window, float delta) {

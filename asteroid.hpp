@@ -54,9 +54,9 @@ public:
 
 		time_alive += delta;
 
-		if (time_alive >= life_span) {
+		/*if (time_alive >= life_span) {
 			split();
-		}
+		}*/
 	}
 
 	void collide(Missle* m) {
