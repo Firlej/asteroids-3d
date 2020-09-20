@@ -10,12 +10,14 @@
 #include <glm/gtx/quaternion.hpp>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string>
 #include "loadOBJ.hpp"
 #include "constants.h"
 #include "lodepng.h"
 #include "shaderprogram.h"
 
 extern ShaderProgram* sp;
+extern const std::vector<glm::vec3> LIGHT_POSITIONS;
 
 class Entity {
 public:
@@ -106,6 +108,10 @@ public:
 		M = glm::scale(M, glm::vec3(scale, scale, scale));
 
 		glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M));
+		for (int i = 0; i < LIGHT_POSITIONS.size(); i++) {
+			std::string location = "lightPositions[" + std::to_string(i) + "]";
+			glUniform3f(sp->u(location.c_str()), LIGHT_POSITIONS[i].x, LIGHT_POSITIONS[i].y, LIGHT_POSITIONS[i].z);
+		}
 
 		glEnableVertexAttribArray(sp->a("vertex")); //Enable sending data to the attribute vertex
 		glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, &(model->verticies[0])); //Specify source of the data for the attribute vertex

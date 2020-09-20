@@ -42,6 +42,13 @@ const float ACCELERATION = 250.0f;
 const float DRAW_DISTANCE = 2000.0f;
 const int NUM_OF_ASTEROIDS = 50;
 
+const glm::vec3 DIST_FROM_SUN = glm::vec3(-100.0f, 100.0f, 500.0f);
+const glm::vec3 DIST_FROM_SUN2 = glm::vec3(700.0f, -100.0f, 200.0f);
+const std::vector<glm::vec3> LIGHT_POSITIONS = {
+	DIST_FROM_SUN * 100.0f,
+	DIST_FROM_SUN2 * 100.0f
+};
+
 float aspectRatio = 1;
 ShaderProgram* sp_simplest; //Pointer to the shader program
 ShaderProgram* sp_lambert;
@@ -55,6 +62,7 @@ Sky sky;
 Model sun_model;
 GLuint sun_texture;
 Sun sun;
+Sun sun2;
 
 Model spaceship_model;
 GLuint spaceship_texture;
@@ -137,7 +145,8 @@ void init() {
 
 	ss = Spaceship::new_spaceship();
 	sky = Sky::new_sky(&ss);
-	sun = Sun::new_sun(&ss);
+	sun = Sun::new_sun(&ss, DIST_FROM_SUN);
+	sun2 = Sun::new_sun(&ss, DIST_FROM_SUN2);
 	for (int i = 0; i < NUM_OF_ASTEROIDS; i++) asteroids.push_back(Asteroid::new_asteroid());
 }
 
@@ -167,6 +176,7 @@ void update_all(float delta) {
 	ss.update(delta);
 	sky.update(delta);
 	sun.update(delta);
+	sun2.update(delta);
 	for (Asteroid& a : asteroids) a.update(delta);
 	for (Missle& m : missles) m.update(delta);
 
@@ -202,6 +212,7 @@ void draw_far_objects(const GLfloat* P, const GLfloat* V) {
 	activate_chosen_shader(P, V, sp_simplest);
 	sky.draw();
 	sun.draw();
+	sun2.draw();
 }
 
 void draw_close_objects(const GLfloat* P, const GLfloat* V) {
