@@ -18,8 +18,10 @@
 
 extern Model sun_model;
 extern GLuint sun_texture;
+extern ShaderProgram* sp_simplest;
 
 const glm::vec3 DIST_FROM_PARENT = glm::vec3(-100.0f, 100.0f, 500.0f);
+const glm::vec3 ROTATION = glm::vec3(0.0f, 0.05f, 0.0f);
 
 class Sun : public Entity {
 public:
@@ -30,11 +32,13 @@ public:
 
 	Sun(Model* model, GLuint* texture, Entity* parent) : Entity(model, texture) {
 		this->parent = parent;
+		rot_vel = ROTATION;
 		scale = 15.0f;
 	}
 
 	void update(float delta) {
 		pos = parent->pos + DIST_FROM_PARENT;
+		update_static(delta);
 	}
 
 	static Sun new_sun(Entity* parent) {

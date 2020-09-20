@@ -2,28 +2,41 @@
 
 uniform sampler2D textureMap0;
 
-in vec4 l;
-in vec4 n;
-in vec4 v;
+in vec4 observer;
+in vec4 norm;
+in vec4 lightPos;
 in vec2 iTexCoord0;
 
 out vec4 pixelColor; //Output variable. Almost final pixel color.
 
 void main(void) {
-	vec4 ml = normalize(l);
-	vec4 mn = normalize(n);
-	vec4 mv = normalize(v);
+	vec4 lightColor = vec4(1, 1, 1, 1);
 
-	//Reflected vector
-	vec4 mr = reflect(-ml, mn);
+	vec4 lightPosDir = normalize(lightPos);
+	vec4 nNorm = normalize(norm);
+	vec4 observerDir = normalize(observer);
 
 	//Surface parameters
-	vec4 kd = texture(textureMap0, iTexCoord0);
-	vec4 ks = vec4(1, 1, 1, 1);
+	vec4 kd = texture(textureMap0, iTexCoord0); // material color
+	vec4 ks = vec4(1, 1, 1, 1); // color of light source
 
-	//Calculating lightning model
-	float nl = clamp(dot(mn,ml), 0, 1);
-	float rv = pow(clamp(dot(mr, mv), 0, 1), 50);
-	//pixelColor = kd;
-	pixelColor = vec4(kd.rgb * nl, kd.a) + vec4(ks.rgb * rv, 0);
+	// ambient
+	float ambientStrength = 0.4;
+	vec4 ambient = ambientStrength * lightColor;
+
+	// diffuse
+	vec4 normal = normalize(norm);
+	vec4 lightDir = normalize(lightPos);
+	float diffuseStrength = clamp(dot(norm, lightDir), 0.0, 1.0);
+	vec4 diffuse = diffuseStrength * lightColor;
+	
+	// specular
+	vec4 reflectedDir = reflect(-lightPosDir, nNorm);
+	float spec = pow(clamp(dot(observerDir, reflectedDir), 0.0, 1.0), 32);
+	vec4 specular = spec * lightColor;
+	
+	vec4 am = vec4(kd.rgb * ambient.rgb, kd.a);
+	vec4 dif = vec4(kd.rgb * diffuse.rgb, kd.a);
+	vec4 spe = vec4(lightColor.rgb * specular.rgb, kd.a);
+	pixelColor = am + dif + spe;
 }

@@ -40,8 +40,10 @@
     <ClCompile Include="shaderprogram.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="f_lambert.glsl" />
     <None Include="f_phong.glsl" />
     <None Include="f_simplest.glsl" />
+    <None Include="v_lambert.glsl" />
     <None Include="v_phong.glsl" />
     <None Include="v_simplest.glsl" />
   </ItemGroup>
