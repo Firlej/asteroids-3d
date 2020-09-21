@@ -76,12 +76,13 @@ Model missle_model;
 GLuint missle_texture;
 std::vector<Missle> missles;
 
-
 auto eye = glm::vec3(0.0f, 0.0f, 0.0f);
 auto center = glm::vec3(0.0f, 0.0f, 0.0f);
 auto up = glm::vec3(0.0f, 0.0f, 0.0f);
 
 float fov_draw = 0.5f * PI;
+
+bool lost = false;
 
 //Error processing callback procedure
 void error_callback(int error, const char* description) {
@@ -135,6 +136,12 @@ void restart_game() {
 	missles.clear();
 	asteroids.clear();
 	for (int i = 0; i < NUM_OF_ASTEROIDS; i++) asteroids.push_back(Asteroid::new_asteroid());
+
+	eye = glm::vec3(0.0f, 0.0f, 0.0f);
+	center = glm::vec3(0.0f, 0.0f, 0.0f);
+	up = glm::vec3(0.0f, 0.0f, 0.0f);
+
+	lost = false;
 }
 
 void init() {
@@ -179,6 +186,11 @@ void freeOpenGLProgram(GLFWwindow* window) {
 
 // run updates on all objects
 void update_all(float delta) {
+
+	if (lost) {
+		restart_game();
+	}
+
 	ss.update(delta);
 	sky.update(delta);
 	sun.update(delta);
@@ -191,6 +203,7 @@ void update_all(float delta) {
 	for (Asteroid& a : asteroids) {
 		if (a.intersects(&ss)) {
 			std::cout << "You lose!" << std::endl;
+			lost = true;
 		}
 	}
 

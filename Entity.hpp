@@ -41,7 +41,7 @@ public:
 
 	Boundries bounds = { glm::vec3(0.0f, 0.0f, 0.0f) };
 
-	unsigned float radius = 0.0f;
+	float radius = 0.0f;
 
 	void calc_radius() {
 		for (int i = 0; i < model->verticies.size(); i += 3) {
