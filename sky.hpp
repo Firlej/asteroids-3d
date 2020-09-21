@@ -22,7 +22,6 @@ public:
 
 	Sky(Model* model, GLuint* texture, Entity* parent) : Entity(model, texture) {
 		this->parent = parent;
-		// todo is there a way to make the sky model share the same pos variable?
 		pos = parent->pos;
 		scale = 210.0f;
 	}

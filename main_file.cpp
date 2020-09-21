@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 const float ROTATION_VELOCITY = PI;
 const float ACCELERATION = 250.0f;
 const float DRAW_DISTANCE = 2000.0f;
-const int NUM_OF_ASTEROIDS = 50;
+int NUM_OF_ASTEROIDS = 20;
 
 const glm::vec3 DIST_FROM_SUN = glm::vec3(-100.0f, 100.0f, 500.0f);
 const glm::vec3 DIST_FROM_SUN2 = glm::vec3(700.0f, -100.0f, 200.0f);
@@ -76,12 +76,13 @@ Model missle_model;
 GLuint missle_texture;
 std::vector<Missle> missles;
 
-
 auto eye = glm::vec3(0.0f, 0.0f, 0.0f);
 auto center = glm::vec3(0.0f, 0.0f, 0.0f);
 auto up = glm::vec3(0.0f, 0.0f, 0.0f);
 
 float fov_draw = 0.5f * PI;
+
+bool lost = false;
 
 //Error processing callback procedure
 void error_callback(int error, const char* description) {
@@ -127,6 +128,30 @@ void windowResizeCallback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
+void fill_asteroids() {
+	if (asteroids.size() > NUM_OF_ASTEROIDS) {
+		NUM_OF_ASTEROIDS = asteroids.size();
+	}
+	while (asteroids.size() < NUM_OF_ASTEROIDS) {
+		asteroids.push_back(Asteroid::new_asteroid());
+	}
+}
+
+void restart_game() {
+	ss = Spaceship::new_spaceship();
+	sky = Sky::new_sky(&ss);
+	sun = Sun::new_sun(&ss, DIST_FROM_SUN);
+	sun2 = Sun::new_sun(&ss, DIST_FROM_SUN2);
+	missles.clear();
+	asteroids.clear();
+
+	eye = glm::vec3(0.0f, 0.0f, 0.0f);
+	center = glm::vec3(0.0f, 0.0f, 0.0f);
+	up = glm::vec3(0.0f, 0.0f, 0.0f);
+
+	lost = false;
+}
+
 void init() {
 	spaceship_model = loadOBJ("models/spaceship/spaceship.obj");
 	spaceship_texture = readTexture("models/spaceship/spaceship.png");
@@ -143,11 +168,7 @@ void init() {
 	sun_model = loadOBJ("models/sun/sun.obj");
 	sun_texture = readTexture("models/sun/sun.png");
 
-	ss = Spaceship::new_spaceship();
-	sky = Sky::new_sky(&ss);
-	sun = Sun::new_sun(&ss, DIST_FROM_SUN);
-	sun2 = Sun::new_sun(&ss, DIST_FROM_SUN2);
-	for (int i = 0; i < NUM_OF_ASTEROIDS; i++) asteroids.push_back(Asteroid::new_asteroid());
+	restart_game();
 }
 
 //Initialization code procedure
@@ -173,6 +194,11 @@ void freeOpenGLProgram(GLFWwindow* window) {
 
 // run updates on all objects
 void update_all(float delta) {
+
+	if (lost) {
+		restart_game();
+	}
+
 	ss.update(delta);
 	sky.update(delta);
 	sun.update(delta);
@@ -182,9 +208,21 @@ void update_all(float delta) {
 
 	for (Missle& m : missles) m.check_distance(&ss);
 
-	for (Asteroid& a : asteroids)
-		for (Missle& m : missles)
-			a.collide(&m);
+	for (Asteroid& a : asteroids) {
+		if (a.intersects(&ss)) {
+			std::cout << "You lose!" << std::endl;
+			lost = true;
+		}
+	}
+
+	for (Asteroid& a : asteroids) {
+		for (Missle& m : missles) {
+			if (a.intersects(&m)) {
+				a.split();
+				m.remove = true;
+			}
+		}
+	}
 
 	for (int i = asteroids.size()-1; i >= 0; i--) {
 		if (asteroids[i].remove) {
@@ -198,7 +236,9 @@ void update_all(float delta) {
 			missles.erase(missles.begin() + i);
 	}
 
-	//std::cout << asteroids.size() << std::endl;
+	fill_asteroids();
+
+	std::cout << asteroids.size() << std::endl;
 }
 
 void activate_chosen_shader(const GLfloat* P, const GLfloat* V, ShaderProgram* chosen_sp) {
