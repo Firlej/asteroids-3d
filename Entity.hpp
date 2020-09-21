@@ -41,12 +41,25 @@ public:
 
 	Boundries bounds = { glm::vec3(0.0f, 0.0f, 0.0f) };
 
+	float radius = 0.0f;
+
+	void calc_radius() {
+		for (int i = 0; i < model->verticies.size(); i += 3) {
+			glm::vec3 vec = glm::vec3(model->verticies[i + 0], model->verticies[i + 1], model->verticies[i + 2]);
+			float len = glm::length(vec);
+			if (len > radius) {
+				radius = len;
+			}
+		}
+	}
+
 	Entity() {};
 
 	Entity(Model* model, GLuint* texture) {
 		this->model = model;
 		this->texture = texture;
 		this->bounds = find_boundries();
+		calc_radius();
 	}
 
 	Boundries find_boundries() {
@@ -60,7 +73,7 @@ public:
 
 		for (int i = 3; i < model->verticies.size(); i++) {
 			float ver = model->verticies[i];
-			switch (i % 3) { 
+			switch (i % 3) {
 			case 0:
 				if (ver < bounds.min.x) bounds.min.x = ver;
 				else if (ver > bounds.max.x) bounds.max.x = ver;
