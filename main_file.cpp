@@ -42,8 +42,18 @@ const float ACCELERATION = 250.0f;
 const float DRAW_DISTANCE = 2000.0f;
 const int NUM_OF_ASTEROIDS = 50;
 
+const glm::vec3 DIST_FROM_SUN = glm::vec3(-100.0f, 100.0f, 500.0f);
+const glm::vec3 DIST_FROM_SUN2 = glm::vec3(700.0f, -100.0f, 200.0f);
+const std::vector<glm::vec3> LIGHT_POSITIONS = {
+	DIST_FROM_SUN * 100.0f,
+	DIST_FROM_SUN2 * 100.0f
+};
+
 float aspectRatio = 1;
-ShaderProgram* sp; //Pointer to the shader program
+ShaderProgram* sp_simplest; //Pointer to the shader program
+ShaderProgram* sp_lambert;
+ShaderProgram* sp_phong;
+ShaderProgram* sp;
 
 Model sky_model;
 GLuint sky_texture;
@@ -52,6 +62,7 @@ Sky sky;
 Model sun_model;
 GLuint sun_texture;
 Sun sun;
+Sun sun2;
 
 Model spaceship_model;
 GLuint spaceship_texture;
@@ -134,7 +145,8 @@ void init() {
 
 	ss = Spaceship::new_spaceship();
 	sky = Sky::new_sky(&ss);
-	sun = Sun::new_sun(&ss);
+	sun = Sun::new_sun(&ss, DIST_FROM_SUN);
+	sun2 = Sun::new_sun(&ss, DIST_FROM_SUN2);
 	for (int i = 0; i < NUM_OF_ASTEROIDS; i++) asteroids.push_back(Asteroid::new_asteroid());
 }
 
@@ -145,14 +157,18 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glfwSetWindowSizeCallback(window, windowResizeCallback);
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
-	sp = new ShaderProgram("v_simplest.glsl", NULL, "f_simplest.glsl");
+	sp_simplest = new ShaderProgram("v_simplest.glsl", NULL, "f_simplest.glsl");
+	sp_lambert = new ShaderProgram("v_lambert.glsl", NULL, "f_lambert.glsl");
+	sp_phong = new ShaderProgram("v_phong.glsl", NULL, "f_phong.glsl");
 
 	init();
 }
 
 //Release resources allocated by the program
 void freeOpenGLProgram(GLFWwindow* window) {
-	delete sp;
+	delete sp_simplest;
+	delete sp_lambert;
+	delete sp_phong;
 }
 
 // run updates on all objects
@@ -160,6 +176,7 @@ void update_all(float delta) {
 	ss.update(delta);
 	sky.update(delta);
 	sun.update(delta);
+	sun2.update(delta);
 	for (Asteroid& a : asteroids) a.update(delta);
 	for (Missle& m : missles) m.update(delta);
 
@@ -184,24 +201,36 @@ void update_all(float delta) {
 	//std::cout << asteroids.size() << std::endl;
 }
 
-void draw_far_objects() {
-	sky.draw();
-	sun.draw();
+void activate_chosen_shader(const GLfloat* P, const GLfloat* V, ShaderProgram* chosen_sp) {
+	sp = chosen_sp;
+	sp->use();
+	glUniformMatrix4fv(sp->u("P"), 1, false, P); //Send parameters to graphics card
+	glUniformMatrix4fv(sp->u("V"), 1, false, V);
 }
 
-void draw_close_objects() {
-	ss.draw();
+void draw_far_objects(const GLfloat* P, const GLfloat* V) {
+	activate_chosen_shader(P, V, sp_simplest);
+	sky.draw();
+	sun.draw();
+	sun2.draw();
+}
+
+void draw_close_objects(const GLfloat* P, const GLfloat* V) {
+
+	activate_chosen_shader(P, V, sp_lambert);
 	for (Asteroid& a : asteroids) a.draw();
 	for (Missle& m : missles) m.draw();
+
+	activate_chosen_shader(P, V, sp_phong);
+	ss.draw();
 }
 
 // run updates on all objects
-void draw_all() {
-	draw_far_objects();
+void draw_all(const GLfloat* P, const GLfloat* V) {
+	draw_far_objects(P, V);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	draw_close_objects();
+	draw_close_objects(P, V);
 }
-
 
 //Drawing procedure
 void drawScene(GLFWwindow* window, float delta) {
@@ -222,17 +251,9 @@ void drawScene(GLFWwindow* window, float delta) {
 	float fov = map(glm::length(ss.vel), 0, ss.max_speed, 0.5f, 0.55f) * PI;
 	fov_draw = lerp(fov_draw, fov, delta, 0.1f);
 
-	//std::cout << max_speed(ACCELERATION, FRICTION) << " " << glm::length(ss.vel) << " " << fov << std::endl;
-
 	glm::mat4 P = glm::perspective(fov_draw, aspectRatio, 1.0f, DRAW_DISTANCE); //compute projection matrix
 
-	sp->use(); //activate shading program
-
-	//Send parameters to graphics card
-	glUniformMatrix4fv(sp->u("P"), 1, false, glm::value_ptr(P));
-	glUniformMatrix4fv(sp->u("V"), 1, false, glm::value_ptr(V));
-
-	draw_all();
+	draw_all(glm::value_ptr(P), glm::value_ptr(V));
 
 	glfwSwapBuffers(window); //Copy back buffer to front buffer
 }
@@ -286,4 +307,3 @@ int main(void)
 	glfwTerminate(); //Free GLFW resources
 	exit(EXIT_SUCCESS);
 }
-
