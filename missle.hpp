@@ -13,7 +13,7 @@ extern Model missle_model;
 extern GLuint missle_texture;
 extern const float DRAW_DISTANCE;
 
-const float VELOCITY = 50.0f;
+const float VELOCITY = 500.0f;
 const float LENGTH_SS = 5.0f;
 
 class Missle : public Entity {
@@ -22,6 +22,7 @@ public:
 
 	Missle(Model* model, GLuint* texture, Entity* parent) : Entity(model, texture) {
 		scale = 1.7f;
+		bounds.scale(scale);
 		pos = parent->pos + parent->heading() * LENGTH_SS;
 		vel = parent->vel + parent->heading() * VELOCITY;
 		rot_vel = glm::normalize(glm::ballRand(4.0f)) * 0.2f;

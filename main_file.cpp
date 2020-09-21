@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 const float ROTATION_VELOCITY = PI;
 const float ACCELERATION = 250.0f;
 const float DRAW_DISTANCE = 2000.0f;
-const int NUM_OF_ASTEROIDS = 50;
+const int NUM_OF_ASTEROIDS = 20;
 
 const glm::vec3 DIST_FROM_SUN = glm::vec3(-100.0f, 100.0f, 500.0f);
 const glm::vec3 DIST_FROM_SUN2 = glm::vec3(700.0f, -100.0f, 200.0f);
@@ -182,9 +182,11 @@ void update_all(float delta) {
 
 	for (Missle& m : missles) m.check_distance(&ss);
 
-	for (Asteroid& a : asteroids)
+	for (Asteroid& a : asteroids) {
+		a.collide(&ss);
 		for (Missle& m : missles)
 			a.collide(&m);
+	}
 
 	for (int i = asteroids.size()-1; i >= 0; i--) {
 		if (asteroids[i].remove) {

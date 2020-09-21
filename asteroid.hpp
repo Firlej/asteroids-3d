@@ -34,6 +34,7 @@ public:
 
 	Asteroid(Model* model, GLuint* texture) : Entity(model, texture) {
 		scale = random() * 5;
+		bounds.scale(scale);
 		pos = glm::ballRand(DRAW_DISTANCE / 3);
 		vel = glm::ballRand(10.0f);
 		rot_vel = glm::normalize(glm::ballRand(4.0f)) * 0.2f;
@@ -42,6 +43,7 @@ public:
 
 	Asteroid(Model* model, GLuint* texture, Asteroid* parent) : Entity(model, texture) {
 		scale = parent->scale * 0.7f;
+		bounds.scale(scale);
 		pos = parent->pos;
 		vel = glm::ballRand(10.0f);
 		rot_vel = glm::normalize(glm::ballRand(4.0f)) * 0.2f;
@@ -51,26 +53,41 @@ public:
 	void update(float delta) {
 		if (remove) return;
 		update_static(delta);
-
+		
+		/*
 		time_alive += delta;
-
-		/*if (time_alive >= life_span) {
+		if (time_alive >= life_span) {
 			split();
 		}*/
 	}
 
 	void collide(Missle* m) {
 		if (remove || m->remove) return;
-		if (distance(m) < 12.0f) {
+
+		/*std::cout << glm::to_string(bounds.cur_min) << std::endl;
+		std::cout << glm::to_string(pos) << std::endl;*/
+
+		if (bounds.collison(m->bounds)) {
 			m->remove = true;
 			split();
+		}
+
+		//if (distance(m) < 12.0f) {
+		//	m->remove = true;
+		//	split();
+		//}
+	}
+
+	void collide(Spaceship* s) {
+		if (bounds.collison(s->bounds)) {
+			std::cout << "You lose!" << std::endl;
 		}
 	}
 
 	void split() {
 		if (remove) return;
 		remove = true;
-		if (scale > 0.3f) {
+		if (scale > 0.7f) {
 			children.push_back(Asteroid::new_asteroid(this));
 			children.push_back(Asteroid::new_asteroid(this));
 		}
