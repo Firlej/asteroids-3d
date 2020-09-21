@@ -64,7 +64,7 @@ public:
 	void split() {
 		if (remove) return;
 		remove = true;
-		if (scale > 0.7f) {
+		if (scale > 1.0f) {
 			children.push_back(Asteroid::new_asteroid(this));
 			children.push_back(Asteroid::new_asteroid(this));
 		}

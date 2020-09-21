@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 const float ROTATION_VELOCITY = PI;
 const float ACCELERATION = 250.0f;
 const float DRAW_DISTANCE = 2000.0f;
-const int NUM_OF_ASTEROIDS = 20;
+int NUM_OF_ASTEROIDS = 20;
 
 const glm::vec3 DIST_FROM_SUN = glm::vec3(-100.0f, 100.0f, 500.0f);
 const glm::vec3 DIST_FROM_SUN2 = glm::vec3(700.0f, -100.0f, 200.0f);
@@ -128,6 +128,15 @@ void windowResizeCallback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
+void fill_asteroids() {
+	if (asteroids.size() > NUM_OF_ASTEROIDS) {
+		NUM_OF_ASTEROIDS = asteroids.size();
+	}
+	while (asteroids.size() < NUM_OF_ASTEROIDS) {
+		asteroids.push_back(Asteroid::new_asteroid());
+	}
+}
+
 void restart_game() {
 	ss = Spaceship::new_spaceship();
 	sky = Sky::new_sky(&ss);
@@ -135,7 +144,6 @@ void restart_game() {
 	sun2 = Sun::new_sun(&ss, DIST_FROM_SUN2);
 	missles.clear();
 	asteroids.clear();
-	for (int i = 0; i < NUM_OF_ASTEROIDS; i++) asteroids.push_back(Asteroid::new_asteroid());
 
 	eye = glm::vec3(0.0f, 0.0f, 0.0f);
 	center = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -228,7 +236,9 @@ void update_all(float delta) {
 			missles.erase(missles.begin() + i);
 	}
 
-	//std::cout << asteroids.size() << std::endl;
+	fill_asteroids();
+
+	std::cout << asteroids.size() << std::endl;
 }
 
 void activate_chosen_shader(const GLfloat* P, const GLfloat* V, ShaderProgram* chosen_sp) {
