@@ -39,8 +39,6 @@ public:
 
 	bool remove = false;
 
-	Boundries bounds = { glm::vec3(0.0f, 0.0f, 0.0f) };
-
 	float radius = 0.0f;
 
 	void calc_radius() {
@@ -58,38 +56,7 @@ public:
 	Entity(Model* model, GLuint* texture) {
 		this->model = model;
 		this->texture = texture;
-		this->bounds = find_boundries();
 		calc_radius();
-	}
-
-	Boundries find_boundries() {
-		Boundries bounds;
-		bounds.min.x = model->verticies[0];
-		bounds.max.x = model->verticies[0];
-		bounds.min.y = model->verticies[1];
-		bounds.max.y = model->verticies[1];
-		bounds.min.z = model->verticies[2];
-		bounds.max.z = model->verticies[2];
-
-		for (int i = 3; i < model->verticies.size(); i++) {
-			float ver = model->verticies[i];
-			switch (i % 3) {
-			case 0:
-				if (ver < bounds.min.x) bounds.min.x = ver;
-				else if (ver > bounds.max.x) bounds.max.x = ver;
-				break;
-			case 1:
-				if (ver < bounds.min.y) bounds.min.y = ver;
-				else if (ver > bounds.max.y) bounds.max.y = ver;
-				break;
-			default:
-				if (ver < bounds.min.z) bounds.min.z = ver;
-				else if (ver > bounds.max.z) bounds.max.z = ver;
-				break;
-			}
-		}
-		
-		return bounds;
 	}
 
 	glm::vec3 heading() {
@@ -117,10 +84,6 @@ public:
 			return true;
 		}
 
-		if (bounds.collison(e->bounds)) {
-			return true;
-		}
-
 		return false;
 	}
 
@@ -134,8 +97,6 @@ public:
 		rot = glm::rotate(rot, curr_rot.y, glm::vec3(0.0f, 1.0f, 0.0f));
 		rot = glm::rotate(rot, curr_rot.x, glm::vec3(1.0f, 0.0f, 0.0f));
 		rot = glm::normalize(rot);
-
-		bounds.update(pos, rot);
 	}
 
 	void update_dynamic(float delta) {
@@ -159,8 +120,6 @@ public:
 		vel *= frictionFactor;
 
 		max_speed = (glm::length(vel) > max_speed) ? glm::length(vel) : max_speed;
-
-		bounds.update(pos, rot);
 	}
 
 	void draw() {

@@ -22,7 +22,7 @@ public:
 
 	Missle(Model* model, GLuint* texture, Entity* parent) : Entity(model, texture) {
 		scale = 1.7f;
-		bounds.scale(scale);
+		radius *= scale;
 		pos = parent->pos + parent->heading() * LENGTH_SS;
 		vel = parent->vel + parent->heading() * VELOCITY;
 		rot_vel = glm::normalize(glm::ballRand(4.0f)) * 0.2f;

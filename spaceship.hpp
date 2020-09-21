@@ -29,6 +29,7 @@ public:
 
 	Spaceship(Model* model, GLuint* texture) : Entity(model, texture) {
 		friction = 0.1f;
+		radius *= scale;
 	};
 
 	void update(float delta) {

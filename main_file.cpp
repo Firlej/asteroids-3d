@@ -224,6 +224,10 @@ void update_all(float delta) {
 		}
 	}
 
+	for (Asteroid& a : asteroids) {
+		a.check_distance(&ss);
+	}
+
 	for (int i = asteroids.size()-1; i >= 0; i--) {
 		if (asteroids[i].remove) {
 			asteroids.insert(asteroids.end(), asteroids[i].children.begin(), asteroids[i].children.end());

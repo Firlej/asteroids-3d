@@ -34,7 +34,7 @@ public:
 
 	Asteroid(Model* model, GLuint* texture) : Entity(model, texture) {
 		scale = random() * 5;
-		bounds.scale(scale);
+		radius *= scale;
 		pos = glm::ballRand(DRAW_DISTANCE / 3);
 		vel = glm::ballRand(10.0f);
 		rot_vel = glm::normalize(glm::ballRand(4.0f)) * 0.2f;
@@ -43,7 +43,7 @@ public:
 
 	Asteroid(Model* model, GLuint* texture, Asteroid* parent) : Entity(model, texture) {
 		scale = parent->scale * 0.7f;
-		bounds.scale(scale);
+		radius *= scale;
 		pos = parent->pos;
 		vel = glm::ballRand(10.0f);
 		rot_vel = glm::normalize(glm::ballRand(4.0f)) * 0.2f;
@@ -70,6 +70,12 @@ public:
 		}
 	}
 
+	void check_distance(Entity* ss) {
+		if (distance(ss) > DRAW_DISTANCE / 2) {
+			remove = true;
+		}
+	}
+
 	static Asteroid new_asteroid() {
 		return Asteroid(&asteroid_model, &asteroid_texture);
 	}
@@ -77,4 +83,5 @@ public:
 	static Asteroid new_asteroid(Asteroid* parent) {
 		return Asteroid(&asteroid_model, &asteroid_texture, parent);
 	}
+
 };
