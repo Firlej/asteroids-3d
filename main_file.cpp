@@ -36,6 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "sky.hpp"
 #include "asteroid.hpp"
 #include "sun.hpp"
+#include "text.hpp"
 
 const float ROTATION_VELOCITY = PI;
 const float ACCELERATION = 250.0f;
@@ -75,6 +76,10 @@ std::vector<Asteroid> asteroids;
 Model missle_model;
 GLuint missle_texture;
 std::vector<Missle> missles;
+
+Model text_model;
+GLuint text_texture;
+Text text;
 
 auto eye = glm::vec3(0.0f, 0.0f, 0.0f);
 auto center = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -142,6 +147,7 @@ void restart_game() {
 	sky = Sky::new_sky(&ss);
 	sun = Sun::new_sun(&ss, DIST_FROM_SUN);
 	sun2 = Sun::new_sun(&ss, DIST_FROM_SUN2);
+	text = Text::new_text();
 	missles.clear();
 	asteroids.clear();
 
@@ -167,6 +173,9 @@ void init() {
 
 	sun_model = loadOBJ("models/sun/sun.obj");
 	sun_texture = readTexture("models/sun/sun.png");
+
+	text_model = loadOBJ("models/text/text2.obj");
+	text_texture = readTexture("models/text/text.png");
 
 	restart_game();
 }
@@ -242,7 +251,8 @@ void update_all(float delta) {
 
 	fill_asteroids();
 
-	std::cout << asteroids.size() << std::endl;
+	if (text.check_distance(&ss)) text.update(delta);
+	//std::cout << asteroids.size() << std::endl;
 }
 
 void activate_chosen_shader(const GLfloat* P, const GLfloat* V, ShaderProgram* chosen_sp) {
@@ -257,6 +267,7 @@ void draw_far_objects(const GLfloat* P, const GLfloat* V) {
 	sky.draw();
 	sun.draw();
 	sun2.draw();
+	if (text.check_distance(&ss)) text.draw();
 }
 
 void draw_close_objects(const GLfloat* P, const GLfloat* V) {
