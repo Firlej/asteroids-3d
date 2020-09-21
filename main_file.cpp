@@ -33,8 +33,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "tools.hpp"
 #include "spaceship.hpp"
-#include "sky.hpp"
 #include "asteroid.hpp"
+#include "sky.hpp"
 #include "sun.hpp"
 #include "text.hpp"
 
