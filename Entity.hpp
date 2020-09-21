@@ -41,7 +41,7 @@ public:
 
 	Boundries bounds = { glm::vec3(0.0f, 0.0f, 0.0f) };
 
-	float radius = 0.0f;
+	unsigned float radius = 0.0f;
 
 	void calc_radius() {
 		for (int i = 0; i < model->verticies.size(); i += 3) {
@@ -108,6 +108,20 @@ public:
 
 	float distance(Entity* e) {
 		return glm::distance(e->pos, pos);
+	}
+
+	bool intersects(Entity* e) {
+		if (remove || e->remove) return false;
+
+		if (distance(e) < radius + e->radius) {
+			return true;
+		}
+
+		if (bounds.collison(e->bounds)) {
+			return true;
+		}
+
+		return false;
 	}
 
 	virtual void update(float) = 0;

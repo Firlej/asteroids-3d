@@ -61,29 +61,6 @@ public:
 		}*/
 	}
 
-	void collide(Missle* m) {
-		if (remove || m->remove) return;
-
-		/*std::cout << glm::to_string(bounds.cur_min) << std::endl;
-		std::cout << glm::to_string(pos) << std::endl;*/
-
-		if (bounds.collison(m->bounds)) {
-			m->remove = true;
-			split();
-		}
-
-		//if (distance(m) < 12.0f) {
-		//	m->remove = true;
-		//	split();
-		//}
-	}
-
-	void collide(Spaceship* s) {
-		if (bounds.collison(s->bounds)) {
-			std::cout << "You lose!" << std::endl;
-		}
-	}
-
 	void split() {
 		if (remove) return;
 		remove = true;

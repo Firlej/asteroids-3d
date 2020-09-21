@@ -127,6 +127,16 @@ void windowResizeCallback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
+void restart_game() {
+	ss = Spaceship::new_spaceship();
+	sky = Sky::new_sky(&ss);
+	sun = Sun::new_sun(&ss, DIST_FROM_SUN);
+	sun2 = Sun::new_sun(&ss, DIST_FROM_SUN2);
+	missles.clear();
+	asteroids.clear();
+	for (int i = 0; i < NUM_OF_ASTEROIDS; i++) asteroids.push_back(Asteroid::new_asteroid());
+}
+
 void init() {
 	spaceship_model = loadOBJ("models/spaceship/spaceship.obj");
 	spaceship_texture = readTexture("models/spaceship/spaceship.png");
@@ -143,11 +153,7 @@ void init() {
 	sun_model = loadOBJ("models/sun/sun.obj");
 	sun_texture = readTexture("models/sun/sun.png");
 
-	ss = Spaceship::new_spaceship();
-	sky = Sky::new_sky(&ss);
-	sun = Sun::new_sun(&ss, DIST_FROM_SUN);
-	sun2 = Sun::new_sun(&ss, DIST_FROM_SUN2);
-	for (int i = 0; i < NUM_OF_ASTEROIDS; i++) asteroids.push_back(Asteroid::new_asteroid());
+	restart_game();
 }
 
 //Initialization code procedure
@@ -183,9 +189,18 @@ void update_all(float delta) {
 	for (Missle& m : missles) m.check_distance(&ss);
 
 	for (Asteroid& a : asteroids) {
-		a.collide(&ss);
-		for (Missle& m : missles)
-			a.collide(&m);
+		if (a.intersects(&ss)) {
+			std::cout << "You lose!" << std::endl;
+		}
+	}
+
+	for (Asteroid& a : asteroids) {
+		for (Missle& m : missles) {
+			if (a.intersects(&m)) {
+				a.split();
+				m.remove = true;
+			}
+		}
 	}
 
 	for (int i = asteroids.size()-1; i >= 0; i--) {
