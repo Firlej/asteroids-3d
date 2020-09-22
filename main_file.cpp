@@ -140,7 +140,7 @@ void fill_asteroids() {
 	if (asteroids.size() > num_of_asteroids && asteroids.size() < MAX_NUM_OF_ASTEROIDS) {
 		num_of_asteroids = asteroids.size();
 	}
-	while (asteroids.size() < num_of_asteroids) {
+	if (asteroids.size() < num_of_asteroids) {
 		asteroids.push_back(Asteroid::new_asteroid(&ss));
 	}
 }
