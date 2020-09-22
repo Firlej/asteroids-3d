@@ -41,7 +41,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 const float ROTATION_VELOCITY = PI;
 const float ACCELERATION = 250.0f;
 const float DRAW_DISTANCE = 2000.0f;
-int NUM_OF_ASTEROIDS = 20;
+const int STAR_NUM_OF_ASTEROIDS = 20;
+const int MAX_NUM_OF_ASTEROIDS = 40;
 
 const glm::vec3 DIST_FROM_SUN = glm::vec3(-100.0f, 100.0f, 500.0f);
 const glm::vec3 DIST_FROM_SUN2 = glm::vec3(700.0f, -100.0f, 200.0f);
@@ -50,6 +51,7 @@ const std::vector<glm::vec3> LIGHT_POSITIONS = {
 	DIST_FROM_SUN2 * 100.0f
 };
 
+int num_of_asteroids = 20;
 float aspectRatio = 1;
 ShaderProgram* sp_simplest; //Pointer to the shader program
 ShaderProgram* sp_lambert;
@@ -134,10 +136,11 @@ void windowResizeCallback(GLFWwindow* window, int width, int height) {
 }
 
 void fill_asteroids() {
-	if (asteroids.size() > NUM_OF_ASTEROIDS) {
-		NUM_OF_ASTEROIDS = asteroids.size();
+	std::cout << asteroids.size() << std::endl;
+	if (asteroids.size() > num_of_asteroids && asteroids.size() < MAX_NUM_OF_ASTEROIDS) {
+		num_of_asteroids = asteroids.size();
 	}
-	while (asteroids.size() < NUM_OF_ASTEROIDS) {
+	while (asteroids.size() < num_of_asteroids) {
 		asteroids.push_back(Asteroid::new_asteroid());
 	}
 }
@@ -150,6 +153,7 @@ void restart_game() {
 	text = Text::new_text();
 	missles.clear();
 	asteroids.clear();
+	num_of_asteroids = STAR_NUM_OF_ASTEROIDS;
 
 	eye = glm::vec3(0.0f, 0.0f, 0.0f);
 	center = glm::vec3(0.0f, 0.0f, 0.0f);
