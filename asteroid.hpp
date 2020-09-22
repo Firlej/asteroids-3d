@@ -17,10 +17,10 @@ public:
 
 	Asteroid() {};
 
-	Asteroid(Model* model, GLuint* texture) : Entity(model, texture) {
+	Asteroid(Model* model, GLuint* texture, Spaceship* ss) : Entity(model, texture) {
 		scale = random() * 5;
 		radius *= scale;
-		pos = glm::ballRand(DRAW_DISTANCE / 3);
+		pos = ss->pos + glm::ballRand(DRAW_DISTANCE / 3);
 		vel = glm::ballRand(10.0f);
 		rot_vel = glm::normalize(glm::ballRand(4.0f)) * 0.2f;
 		life_span = random() * 20 + 10;
@@ -61,8 +61,8 @@ public:
 		}
 	}
 
-	static Asteroid new_asteroid() {
-		return Asteroid(&asteroid_model, &asteroid_texture);
+	static Asteroid new_asteroid(Spaceship* ss) {
+		return Asteroid(&asteroid_model, &asteroid_texture, ss);
 	}
 
 	static Asteroid new_asteroid(Asteroid* parent) {
