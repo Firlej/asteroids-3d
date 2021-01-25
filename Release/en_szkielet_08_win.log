@@ -1,0 +1,11 @@
+﻿  main_file.cpp
+C:\Users\szulc\Documents\Code\C++\asteroids-3d\Entity.hpp(45,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\szulc\Documents\Code\C++\asteroids-3d\Entity.hpp(132,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\szulc\Documents\Code\C++\asteroids-3d\main_file.cpp(140,23): warning C4018: '>': signed/unsigned mismatch
+C:\Users\szulc\Documents\Code\C++\asteroids-3d\main_file.cpp(143,23): warning C4018: '<': signed/unsigned mismatch
+  Generating code
+  112 of 924 functions (12.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    24 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  en_szkielet_08_win.vcxproj -> C:\Users\szulc\Documents\Code\C++\asteroids-3d\Release\en_szkielet_08_win.exe
